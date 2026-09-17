@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>BotForge - Create Trading Sites</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{background:#0a0a0f;color:white;font-family:sans-serif;padding:20px}
+.card{background:#15151f;border:1px solid #2a2a3a;border-radius:16px;padding:20px;margin:10px}
+button{background:#7c3aed;color:white;border:0;padding:12px 24px;border-radius:30px;font-weight:bold;width:100%}
+.stat{background:#15151f;padding:16px;border-radius:12px;text-align:center}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+</style>
+</head>
+<body>
+<h1>BotForge</h1>
+<p style="color:#888">Create your trading platform in 5 minutes</p>
+
+<div class="grid">
+<div class="stat"><small>TOTAL SITES</small><h2>0</h2></div>
+<div class="stat"><small>DEPLOYED</small><h2>0</h2></div>
+</div>
+
+<h2 style="margin-top:30px">Choose Platform Type</h2>
+<div class="card">
+<h3>🤖 Bot Platform</h3>
+<p style="color:#888;font-size:13px">DBot style visual builder - Most Popular</p>
+<button onclick="alert('Bot Platform selected - Next: Add Domain page coming')">Setup as Bot</button>
+</div>
+
+<div class="card">
+<h3>📈 SmartTrader</h3>
+<p style="color:#888;font-size:13px">Professional trading with charts</p>
+<button style="background:white;color:black" onclick="alert('SmartTrader selected')">Setup as Smart</button>
+</div>
+
+<div class="card">
+<h3>✈️ Air Run</h3>
+<p style="color:#888;font-size:13px">Gamified accumulator trading</p>
+<button style="background:#1f1f2f" onclick="alert('Air Run selected')">Setup as Air</button>
+</div>
+
+<div class="card" style="margin-top:30px;border-color:#7c3aed">
+<h3>BotForge AI Site Creator</h3>
+<input id="domain" placeholder="yourname.site ($4.44/year)" style="width:100%;padding:12px;background:black;border:1px solid #333;border-radius:8px;color:white;margin:10px 0">
+<input id="brand" placeholder="Brand Name e.g. Money9GG" style="width:100%;padding:12px;background:black;border:1px solid #333;border-radius:8px;color:white;margin:10px 0">
+<button onclick="createSite()">Pay with M-Pesa - Create Site</button>
+<p style="font-size:11px;color:#666;margin-top:10px">* Agree to share 20% monthly commission + $1.49 AI fee</p>
+</div>
+
+<script>
+function createSite(){
+  const d=document.getElementById('domain').value
+  const b=document.getElementById('brand').value
+  if(!d || !b) return alert('Enter domain and brand name')
+  alert('BotForge: Creating ' + b + ' at ' + d + '... M-Pesa STK push will be added next!')
+}
+</script>
+</body>
+  </html>
