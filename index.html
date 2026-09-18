@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#060A1A">
+<title>BotForge — Deriv Third Party Builder</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+:root{--bg:#060A1A;--nav:#0D1126;--card:#0F142E;--input:#151A33;--border:#1E264E;--muted:#8B91A8;--purple:#7C3AED;--blue:#6366F1}
+body{background:var(--bg);color:#fff;min-height:100vh}
+button,input{font:inherit}.nav{height:56px;background:var(--nav);border-bottom:1px solid #1A2142;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:50}
+.logo{font-size:20px;font-weight:800;background:linear-gradient(90deg,#8B5CF6,#C4B5FD);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.menu-btn{width:38px;height:38px;background:#151B36;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--border);color:#fff;font-size:19px}
+.main{padding:16px;max-width:760px;margin:0 auto;padding-bottom:80px}.page{display:none}.page.active{display:block}
+.side{position:fixed;left:-320px;top:0;width:300px;height:100vh;background:#0A0D1F;border-right:1px solid #1A2142;z-index:100;transition:.3s;display:flex;flex-direction:column;overflow-y:auto}.side.open{left:0}
+.side-head{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:12px;align-items:center}
+.bfmark{width:36px;height:36px;background:linear-gradient(135deg,#fff,#E0E0FF);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:800}
+.side-item{min-height:48px;display:flex;align-items:center;gap:12px;padding:6px 14px;border-radius:12px;color:#8B91A8;font-size:14px;cursor:pointer;margin:3px 8px}.side-item:hover{background:#151A33;color:#fff}.side-item.active{background:linear-gradient(90deg,rgba(139,92,246,.25),rgba(59,130,246,.18));border:1px solid rgba(139,92,246,.35);color:#fff}
+.si-icon{width:36px;height:36px;background:#1E2442;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:90;display:none}.overlay.show{display:block}
+.card,.basic-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:12px}.basic-card{border-radius:24px;padding:20px}
+.create-purple{width:100%;height:52px;background:linear-gradient(90deg,#7C3AED,#A855F7);border:0;border-radius:16px;color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0;cursor:pointer}.btn{width:100%;background:linear-gradient(90deg,#7C3AED,#6366F1);border:0;padding:13px;border-radius:28px;color:#fff;font-weight:700;cursor:pointer;margin-top:12px}.btn:disabled{opacity:.55;cursor:not-allowed}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.stat-box{background:#0E1430;border:1px solid var(--border);border-radius:18px;padding:14px}.stat-label{font-size:11px;color:#8B9EFF}.stat-value{font-size:28px;font-weight:800;margin-top:5px}
+.filter-row{display:flex;gap:8px;overflow:auto;margin-top:10px}.pill{background:transparent;color:#8B91A8;padding:8px 14px;border-radius:20px;border:1px solid var(--border);cursor:pointer;white-space:nowrap}.pill.active{background:#fff;color:#000;border-color:#fff}
+.inp,.basic-input{width:100%;padding:13px;background:var(--input);border:1px solid var(--border);border-radius:10px;color:#fff;margin:6px 0;outline:none}.basic-input{padding:15px;border-radius:14px;font-size:15px}.inp:focus,.basic-input:focus{border-color:#7C3AED}
+.back{display:inline-flex;gap:8px;align-items:center;color:#8B91A8;cursor:pointer;padding:10px 0}.choice{border:1px solid var(--border);border-radius:20px;background:#0E1430;padding:18px;margin-top:12px}.choice.recommended{border-color:rgba(139,92,246,.5);background:linear-gradient(180deg,#15132E,#0E0C1F)}.choice-title{display:flex;gap:12px;align-items:center}.choice-icon{width:48px;height:48px;border-radius:14px;background:rgba(139,92,246,.16);display:flex;align-items:center;justify-content:center;font-size:22px}.choice button{width:100%;height:48px;border:0;border-radius:14px;color:#fff;font-weight:700;margin-top:15px;cursor:pointer}.ai-btn{background:linear-gradient(90deg,#8B5CF6,#EC4899)}.manual-btn{background:#2563EB}
+.platform-card{border:2px solid #2563EB;border-radius:20px;background:linear-gradient(180deg,#0F1A33,#0A1124);padding:20px;margin-top:14px}.platform-card h3{margin-bottom:5px}.features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;color:#A1A8C3;font-size:13px}.ref-link{margin-top:14px;color:#8B91A8;font-size:12px;background:rgba(255,255,255,.05);padding:7px 10px;border-radius:8px;display:inline-block}.platform-card .select{width:100%;height:48px;background:#2563EB;border:0;border-radius:14px;color:#fff;font-weight:700;margin-top:12px;cursor:pointer}
+.editor-tabs{display:flex;gap:6px;overflow:auto;padding:10px 0;position:sticky;top:56px;background:var(--bg);z-index:8}.tab-btn{background:#151A33;border:1px solid var(--border);color:#8B91A8;padding:8px 13px;border-radius:20px;font-size:11px;cursor:pointer;white-space:nowrap}.tab-btn.active{background:linear-gradient(90deg,#7C3AED,#6366F1);color:#fff}
+.editor-panel{display:none}.editor-panel.active{display:block}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.color-input{height:46px;width:100%;background:#151A33;border:1px solid var(--border);border-radius:10px;padding:3px}
+.notice{background:rgba(30,58,138,.2);border:1px solid #1E3A8A;border-radius:12px;padding:14px;color:#93C5FD;font-size:13px;line-height:1.5;margin-top:14px}.empty{text-align:center;padding:30px;border-style:dashed;color:#8B91A8}.hidden{display:none!important}.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#171B35;border:1px solid #343B68;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:200;font-size:13px}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:520px){.main{padding:13px}.features{grid-template-columns:1fr}.row{grid-template-columns:1fr}.side{width:290px}}
+</style>
+</head>
+<body>
+<header class="nav">
+<button class="menu-btn" onclick="openSide()" aria-label="Open menu">☰</button>
+<div class="logo">BotForge</div><div style="width:38px"></div>
+</header>
+
+<div class="overlay" id="overlay" onclick="closeSide()"></div>
+<aside class="side" id="side">
+<div class="side-head"><div class="bfmark">BF</div><div><div style="font-size:21px;font-weight:800;background:linear-gradient(90deg,#A78BFA,#8B5CF6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">BotForge</div><div style="font-size:9px;letter-spacing:1.3px;color:#8B91A8">DERIV THIRD PARTY BUILDER</div></div></div>
+<nav style="padding:10px 0;flex:1">
+<div class="side-item active" data-page="sites" onclick="go('sites')"><span class="si-icon">🌐</span>Sites</div>
+<div class="side-item" data-page="tutorials" onclick="go('tutorials')"><span class="si-icon">🎓</span>Tutorials</div>
+<div class="side-item" data-page="domains" onclick="go('domains')"><span class="si-icon">🔗</span>Domains</div>
+<div class="side-item" data-page="updates" onclick="go('updates')"><span class="si-icon">📰</span>Platform Updates</div>
+<div class="side-item" data-page="deploy" onclick="go('deploy')"><span class="si-icon">🚀</span>Deployments</div>
+<div class="side-item" data-page="comm" onclick="go('comm')"><span class="si-icon">💵</span>Commissions</div>
+<div class="side-item" data-page="earn" onclick="go('earn')"><span class="si-icon">💼</span>Earnings</div>
+<div class="side-item" data-page="announcements" onclick="go('announcements')"><span class="si-icon">📢</span>Announcements</div>
+<div class="side-item" data-page="editor" onclick="go('editor')"><span class="si-icon">✏️</span>Website Editor</div>
+<div class="side-item" data-page="xml" onclick="go('xml')"><span class="si-icon">🤖</span>XML Bots</div>
+<div class="side-item" data-page="aigen" onclick="go('aigen')"><span class="si-icon">✨</span>AI Bot Generator</div>
+<div class="side-item" data-page="signals" onclick="go('signals')"><span class="si-icon">⚡</span>AI Signals</div>
+<div class="side-item" data-page="store" onclick="go('store')"><span class="si-icon">🛍️</span>Bot Store</div>
+<div class="side-item" data-page="support" onclick="go('support')"><span class="si-icon">🎧</span>Support</div>
+<div class="side-item" data-page="settings" onclick="go('settings')"><span class="si-icon">⚙️</span>Settings</div>
+</nav>
+<div style="padding:16px;border-top:1px solid rgba(255,255,255,.06);color:#8B91A8;font-size:13px">Theme 🌙<br><br>Language 🌐 EN<br><br><button class="pill" onclick="toast('Sign out will be connected to authentication later')">↪ Sign Out</button><div style="text-align:center;color:#555B72;font-size:11px;margin-top:15px">© 2026 BotForge</div></div>
+</aside>
+
+<main class="main">
+
+<section id="p-sites" class="page active">
+<div style="display:flex;align-items:center;gap:12px"><div class="choice-icon">🌐</div><h1 style="font-size:27px">Your Sites</h1></div>
+<p style="color:#8B91A8;font-size:13px;margin-top:5px">Manage and deploy your Deriv third party builder sites</p>
+<button class="create-purple" onclick="go('pick')">＋ Create Site ✨</button>
+<div class="stat-grid">
+<div class="stat-box"><div class="stat-label">🌐 TOTAL SITES</div><div class="stat-value" id="totalSites">0</div></div>
+<div class="stat-box"><div class="stat-label" style="color:#22C55E">〰 DEPLOYED</div><div class="stat-value" id="deployedSites">0</div></div>
+<div class="stat-box"><div class="stat-label" style="color:#F59E0B">📝 DRAFTS</div><div class="stat-value" id="draftSites">0</div></div>
+<div class="stat-box"><div class="stat-label" style="color:#A78BFA">📈 THIS MONTH</div><div class="stat-value" id="monthSites">0</div></div>
+</div>
+<div style="margin-top:15px"><b style="font-size:11px;letter-spacing:2px;color:#6B7280">FILTER SITES</b><p style="color:#6B7280;font-size:11px;margin-top:7px">Switch between all platforms or view one platform type only.</p><div class="filter-row"><button class="pill active">All (<span id="allCount">0</span>)</button><button class="pill">Bot Platform (0)</button></div></div>
+<div id="siteList"></div>
+</section>
+
+<section id="p-pick" class="page">
+<div class="back" onclick="go('sites')">← Back to sites</div>
+<p style="text-align:center;color:#8B91A8;font-size:14px;padding:5px">Both options end with the same live site — choose the workflow you prefer.</p>
+<div class="choice recommended"><span style="display:inline-block;background:linear-gradient(90deg,#7C3AED,#EC4899);padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700">⭐ Recommended</span><div class="choice-title" style="margin-top:13px"><div class="choice-icon">✨</div><div><b>AI Assistant</b><div style="color:#8B91A8;font-size:13px">Describe your site and let AI prepare the configuration</div></div></div><button class="ai-btn" onclick="go('ai-assistant')">Start with AI →</button></div>
+<div class="choice"><div class="choice-title"><div class="choice-icon">⚙️</div><div><b>Manual Setup</b><div style="color:#8B91A8;font-size:13px">For advanced users</div></div></div><button class="manual-btn" onclick="go('platform')">Start Manual Setup →</button></div>
+</section>
+
+<section id="p-ai-assistant" class="page">
+<div class="back" onclick="go('pick')">← Back</div><h1 style="font-size:26px">AI Assistant</h1>
+<p style="color:#8B91A8;font-size:13px;margin-top:6px">Describe the site you want. This demo saves your request locally; connect an AI backend later for real generation.</p>
+<div class="card"><label style="font-size:13px;color:#C4CAD9">Site name</label><input id="aiName" class="inp" placeholder="My Platform"><label style="font-size:13px;color:#C4CAD9">Describe your website</label><textarea id="aiPrompt" class="inp" style="min-height:120px;resize:vertical" placeholder="Example: Create a dark purple Deriv bot platform with bot cards, an analysis tool, AI scanner and account switcher."></textarea><button class="btn" onclick="startAI()">Generate Site Configuration</button></div>
+</section>
+
+<section id="p-platform" class="page">
+<div class="back" onclick="go('pick')">← Back to mode selection</div>
+<div style="text-align:center;margin-top:10px"><div style="font-size:11px;letter-spacing:3px;color:#6B7280;font-weight:700">STEP 2</div><h1 style="font-size:27px;margin-top:8px">Choose your platform type</h1><p style="color:#8B91A8;font-size:13px;margin-top:8px">Each platform is configured as a standalone branded site.</p></div>
+<div class="platform-card"><div class="choice-title"><div class="choice-icon">🤖</div><div><h3>Bot Platform</h3><div style="color:#8B91A8;font-size:13px">Automated trading bots</div></div></div><p style="color:#A1A8C3;font-size:14px;margin-top:14px">Build a Dbot-style interface with visual bot tools and editable site components.</p><div class="features"><div>● Visual bot builder</div><div>● Bot management</div><div>● Bot Store</div><div>● XML import/export</div><div>● AI scanner interface</div><div>● Analysis tools</div></div><div class="ref-link">↗ Reference: kittraders.site</div><button class="select" onclick="selectPlatform('bot')">Select Bot Platform →</button></div>
+</section>
+
+<section id="p-create" class="page">
+<div class="back" onclick="go('platform')">← Back to platform selection</div>
+<div class="basic-card"><h1 style="font-size:26px">Basic Information</h1><p style="color:#8B91A8;font-size:13px;margin-top:6px">Enter the core details for your new site.</p>
+<label style="display:block;margin-top:22px;font-weight:700">Domain *</label><input id="domain" class="basic-input" placeholder="example.com"><button class="buy-btn" style="width:100%;padding:13px;background:transparent;border:1px solid #252D55;border-radius:12px;color:#fff;cursor:pointer" onclick="toast('Domain purchasing will be connected to a registrar API later')">🛒 Buy / Connect Domain</button>
+<label style="display:block;margin-top:20px;font-weight:700">Site Name *</label><input id="siteName" class="basic-input" placeholder="My Platform">
+<label style="display:block;margin-top:20px;font-weight:700">Site Title *</label><input id="siteTitle" class="basic-input" placeholder="My Platform — Advanced Trading">
+<label style="display:block;margin-top:20px;font-weight:700">Commission Markup</label><div style="display:flex;justify-content:space-between;color:#A78BFA;font-weight:700"><span>0%</span><span id="markupValue">3.0%</span></div><input id="markup" type="range" min="0" max="3" step=".1" value="3" style="width:100%;accent-color:#7C3AED" oninput="markupValue.textContent=Number(this.value).toFixed(1)+'%'">
+<div class="notice">A production version should assign the appropriate Deriv application/OAuth configuration on the server. Do not expose secret credentials in this HTML.</div>
+<button class="btn" style="height:52px" onclick="createSite()">Create Site</button>
+</div>
+</section>
+
+<section id="p-editor" class="page">
+<div style="display:flex;justify-content:space-between;align-items:center"><div><div class="back" onclick="go('sites')">← Sites</div><h1 style="font-size:25px">Website Editor</h1></div><button class="pill active" onclick="saveEditor()">Save</button></div>
+<div id="editorTabs" class="editor-tabs"></div><div id="editorContent"></div>
+</section>
+
+<section id="p-domains" class="page"><h1>Domains</h1><p style="color:#8B91A8;font-size:13px;margin-top:5px">Manage domains for your generated sites.</p><div class="card"><input id="domainSearch" class="inp" placeholder="example.com"><button class="btn" onclick="toast('Domain availability API will be connected here')">🛒 Check Availability</button></div></section>
+<section id="p-deploy" class="page"><h1>Deployments</h1><p style="color:#8B91A8;font-size:13px;margin-top:5px">Manage published sites.</p><div id="deploymentList" class="card empty">No deployments yet.</div></section>
+<section id="p-comm" class="page"><h1>Commissions</h1><div class="card"><h3>Commission Dashboard</h3><p style="color:#8B91A8;margin-top:7px">Production commission data will be loaded from your approved partner/application integration.</p><button class="btn" onclick="toast('Withdrawal workflow requires a secure backend')">Request Withdrawal</button></div></section>
+<section id="p-earn" class="page"><h1>Earnings</h1><div class="card"><b id="earnText">0 sites — no earnings yet</b><p style="color:#8B91A8;font-size:13px;margin-top:8px">Earnings should be calculated from verified backend data.</p></div></section>
+<section id="p-tutorials" class="page"><h1>Tutorials</h1><div class="card">Learn how to create, configure and deploy a BotForge site.</div></section>
+<section id="p-updates" class="page"><h1>Platform Updates</h1><div class="card">BotForge updates will appear here.</div></section>
+<section id="p-announcements" class="page"><h1>Announcements</h1><div class="card">Announcements will appear here.</div></section>
+<section id="p-xml" class="page"><h1>XML Bots</h1><div class="card">XML bot import/export tools can be connected here.</div></section>
+<section id="p-aigen" class="page"><h1>AI Bot Generator</h1><div class="card">Describe a bot strategy and connect an AI backend to generate a configuration.</div></section>
+<section id="p-signals" class="page"><h1>AI Signals</h1><div class="card">AI signal/scanner interface placeholder. Trading signals should be clearly presented as analysis, not guaranteed outcomes.</div></section>
+<section id="p-store" class="page"><h1>Bot Store</h1><div class="card">Your marketplace for bot configurations can be built here.</div></section>
+<section id="p-support" class="page"><h1>Support</h1><div class="card"><p>Support center placeholder.</p><button class="btn" onclick="toast('Connect your support system here')">Contact Support</button></div></section>
+<section id="p-settings" class="page"><h1>Settings</h1><div class="card"><p>BotForge settings</p><p style="color:#8B91A8;font-size:13px;margin-top:8px">Authentication, account, security and application settings should be connected to the backend.</p></div></section>
+
+</main>
+<div id="toast" class="toast"></div>
+
+<script>
+const STORAGE_KEY='botforge_demo_sites_v1';
+let sites=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+let selectedPlatform='bot', editorSiteId=null, editorTab='Themes';
+
+const editorTabs=['Themes','Basic Info','Branding','Theme Colors','Trading Engine','OAuth','Loader','Bot Cards','Account Switch','AI Scanners','Custom Blocks','Tab Config','Tab Style','Fast Trader','Analysis Tool','Referral','Social Links'];
+
+function saveSites(){localStorage.setItem(STORAGE_KEY,JSON.stringify(sites));renderDashboard()}
+function openSide(){side.classList.add('open');overlay.classList.add('show')}
+function closeSide(){side.classList.remove('open');overlay.classList.remove('show')}
+function go(id){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ const el=document.getElementById('p-'+id); if(el) el.classList.add('active'); else document.getElementById('p-sites').classList.add('active');
+ document.querySelectorAll('.side-item').forEach(x=>x.classList.toggle('active',x.dataset.page===id));
+ closeSide(); window.scrollTo({top:0,behavior:'smooth'});
+ if(id==='editor') openEditor(editorSiteId||sites[0]?.id);
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2600)}
+function selectPlatform(type){selectedPlatform=type;localStorage.setItem('selected_platform',type);go('create')}
+function startAI(){
+ const name=document.getElementById('aiName').value.trim()||'My AI Platform';
+ const prompt=document.getElementById('aiPrompt').value.trim();
+ if(!prompt){toast('Describe the website first');return}
+ document.getElementById('siteName').value=name;
+ document.getElementById('siteTitle').value=name+' — AI Trading Platform';
+ go('platform');toast('AI request prepared. Choose Bot Platform to continue.')
+}
+function createSite(){
+ const name=document.getElementById('siteName').value.trim();
+ const domain=document.getElementById('domain').value.trim();
+ const title=document.getElementById('siteTitle').value.trim()||name;
+ if(!name){toast('Enter a site name');return}
+ const site={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),name,domain:domain||'not-connected',title,platform:selectedPlatform,markup:Number(document.getElementById('markup').value),status:'draft',createdAt:new Date().toISOString(),settings:{theme:'Midnight Purple',primary:'#7C3AED',secondary:'#6366F1',loader:true,aiScanners:true,analysisTool:true}};
+ sites.push(site);saveSites();editorSiteId=site.id;go('sites');toast('Site created and saved as a draft')}
+function renderDashboard(){
+ totalSites.textContent=sites.length;allCount.textContent=sites.length;
+ const deployed=sites.filter(s=>s.status==='deployed').length;deployedSites.textContent=deployed;
+ draftSites.textContent=sites.length-deployed;monthSites.textContent=sites.filter(s=>new Date(s.createdAt).getMonth()===new Date().getMonth()).length;
+ siteList.innerHTML=sites.length?sites.map(s=>`<div class="card"><div style="display:flex;justify-content:space-between;gap:10px"><div><b>${esc(s.name)}</b><div style="color:#8B91A8;font-size:12px;margin-top:5px">${esc(s.domain)} · ${esc(s.platform)}</div></div><span style="font-size:11px;color:${s.status==='deployed'?'#22C55E':'#F59E0B'}">${s.status.toUpperCase()}</span></div><div style="display:flex;gap:8px;margin-top:12px"><button class="pill active" onclick="openEditor('${s.id}')">✏️ Edit</button><button class="pill" onclick="deploySite('${s.id}')">🚀 ${s.status==='deployed'?'Redeploy':'Deploy'}</button></div></div>`).join(''):`<div class="card empty"><div>No sites yet</div><p style="font-size:12px;margin-top:7px">Create your first site to get started.</p><button class="create-purple" style="height:43px;font-size:14px" onclick="go('pick')">＋ Create Site ✨</button></div>`;
+ deploymentList.innerHTML=deployed?sites.filter(s=>s.status==='deployed').map(s=>`<div style="padding:10px 0;border-bottom:1px solid #1E264E"><b>${esc(s.name)}</b><div style="color:#8B91A8;font-size:12px;margin-top:4px">${esc(s.domain)} · Published</div></div>`).join(''):'No deployments yet.';
+ earnText.textContent=sites.length+' site'+(sites.length===1?'':'s')+' — earnings require backend data';
+}
+function openEditor(id){
+ if(!id){toast('Create a site first');go('pick');return}
+ editorSiteId=id;editorTab='Themes';go('editor');renderEditor()
+}
+function renderEditor(){
+ const s=sites.find(x=>x.id===editorSiteId);if(!s)return;
+ editorTabsEl=document.getElementById('editorTabs');editorContentEl=document.getElementById('editorContent');
+ editorTabsEl.innerHTML=editorTabs.map(t=>`<button class="tab-btn ${t===editorTab?'active':''}" onclick="setEditorTab('${t}')">${t}</button>`).join('');
+ let c='';
+ if(editorTab==='Themes') c=`<div class="card"><h3>Theme</h3><p style="color:#8B91A8;font-size:13px;margin-top:6px">Choose the visual identity of ${esc(s.name)}.</p><div class="row" style="margin-top:14px"><button class="pill active" onclick="setSetting('theme','Midnight Purple')">Midnight Purple</button><button class="pill" onclick="setSetting('theme','Midnight Blue')">Midnight Blue</button></div></div>`;
+ else if(editorTab==='Basic Info') c=`<div class="card"><label>Site Name</label><input id="edName" class="inp" value="${escAttr(s.name)}"><label>Site Title</label><input id="edTitle" class="inp" value="${escAttr(s.title)}"><label>Domain</label><input id="edDomain" class="inp" value="${escAttr(s.domain)}"><button class="btn" onclick="saveBasic()">Save Basic Info</button></div>`;
+ else if(editorTab==='Theme Colors') c=`<div class="card"><h3>Theme Colors</h3><div class="row" style="margin-top:12px"><label>Primary<input id="primaryColor" class="color-input" type="color" value="${s.settings.primary}"></label><label>Secondary<input id="secondaryColor" class="color-input" type="color" value="${s.settings.secondary}"></label></div><button class="btn" onclick="saveColors()">Save Colors</button></div>`;
+ else if(editorTab==='Branding') c=settingCard('Branding','Logo, favicon, brand name and public identity.');
+ else if(editorTab==='Trading Engine') c=settingCard('Trading Engine','Connect your approved Deriv API/backend trading layer here. Keep credentials server-side.');
+ else if(editorTab==='OAuth') c=settingCard('Deriv OAuth','Configure your registered OAuth client and redirect URI on the backend.');
+ else if(editorTab==='Loader') c=toggleCard('Loader','loader','Controls the loading screen on the generated site.',s.settings.loader);
+ else if(editorTab==='AI Scanners') c=toggleCard('AI Scanners','aiScanners','Enable the scanner interface.',s.settings.aiScanners);
+ else if(editorTab==='Analysis Tool') c=toggleCard('Analysis Tool','analysisTool','Enable the analysis-tool interface.',s.settings.analysisTool);
+ else if(editorTab==='Bot Cards') c=settingCard('Bot Cards','Configure bot cards, descriptions, visibility and actions.');
+ else if(editorTab==='Account Switch') c=settingCard('Account Switch','Configure demo/real account presentation through the secure backend.');
+ else if(editorTab==='Custom Blocks') c=settingCard('Custom Blocks','Add reusable blocks to the generated site.');
+ else if(editorTab==='Tab Config') c=settingCard('Tab Config','Choose which tabs appear on the generated site.');
+ else if(editorTab==='Tab Style') c=settingCard('Tab Style','Configure navigation layout and active-state styling.');
+ else if(editorTab==='Fast Trader') c=settingCard('Fast Trader','Configure the fast-trading interface. Actual trading must use the approved backend/API.');
+ else if(editorTab==='Referral') c=settingCard('Referral','Configure referral links and attribution through your approved partner setup.');
+ else if(editorTab==='Social Links') c=settingCard('Social Links','Add public social/community links.');
+ editorContentEl.innerHTML=c;
+}
+function settingCard(title,key,desc){return `<div class="card"><h3>${title}</h3><p style="color:#8B91A8;font-size:13px;margin-top:7px">${desc}</p><button class="btn" onclick="toast('${title} settings saved')">Save Settings</button></div>`}
+function toggleCard(title,key,desc,val){return `<div class="card"><h3>${title}</h3><p style="color:#8B91A8;font-size:13px;margin-top:7px">${desc}</p><button class="btn" onclick="setSetting('${key}',${!val})">${val?'Enabled':'Disabled'} — Toggle</button></div>`}
+function setEditorTab(t){editorTab=t;renderEditor()}
+function setSetting(key,val){const s=sites.find(x=>x.id===editorSiteId);if(!s)return;s.settings[key]=val;saveSites();renderEditor();toast('Setting saved')}
+function saveBasic(){const s=sites.find(x=>x.id===editorSiteId);s.name=document.getElementById('edName').value.trim()||s.name;s.title=document.getElementById('edTitle').value.trim()||s.title;s.domain=document.getElementById('edDomain').value.trim()||s.domain;saveSites();renderEditor();toast('Basic information saved')}
+function saveColors(){const s=sites.find(x=>x.id===editorSiteId);s.settings.primary=document.getElementById('primaryColor').value;s.settings.secondary=document.getElementById('secondaryColor').value;saveSites();renderEditor();toast('Theme colors saved')}
+function saveEditor(){saveSites();toast('Editor changes saved')}
+function deploySite(id){const s=sites.find(x=>x.id===id);if(!s)return;s.status='deployed';saveSites();toast('Site marked as deployed. Connect a deployment provider in the backend for real publishing.')}
+function esc(v){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function escAttr(v){return esc(v)}
+renderDashboard();
+</script>
+</body>
+  </html>
