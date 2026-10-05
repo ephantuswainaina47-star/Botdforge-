@@ -1,19 +1,36 @@
 export default async function handler(req, res) {
-  const code = req.query.code;
+  const { code, state, error, error_description } = req.query;
 
-  if (!code) {
-    return res.status(400).send("Missing Deriv authorization code.");
+  if (error) {
+    return res.status(400).send(`
+      <html>
+        <body style="font-family:Arial;text-align:center;padding:40px">
+          <h2>Deriv OAuth Error</h2>
+          <p><strong>${error}</strong></p>
+          <p>${error_description || "No additional information was provided."}</p>
+        </body>
+      </html>
+    `);
   }
 
-  // Temporary response.
-  // We will connect the secure token exchange and Supabase
-  // after confirming the OAuth redirect works.
-  res.status(200).send(`
+  if (!code) {
+    return res.status(400).send(`
+      <html>
+        <body style="font-family:Arial;text-align:center;padding:40px">
+          <h2>No authorization code received</h2>
+          <p>Deriv did not return an authorization code.</p>
+          <p>We need to inspect the OAuth response.</p>
+        </body>
+      </html>
+    `);
+  }
+
+  return res.status(200).send(`
     <html>
       <body style="font-family:Arial;text-align:center;padding:40px">
         <h2>Deriv authorization received ✅</h2>
-        <p>BotForge received the authorization code.</p>
-        <p>Next we will securely exchange it for the Deriv access token.</p>
+        <p>Authorization code received successfully.</p>
+        <p>Next we will connect the secure token exchange.</p>
       </body>
     </html>
   `);
