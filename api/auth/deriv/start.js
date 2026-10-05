@@ -46,9 +46,11 @@ export default async function handler(req, res) {
   authUrl.searchParams.set("redirect_uri", redirectUri);
 
   // We will use trading access for BotForge later.
-  authUrl.searchParams.set(
-    "scope",
-    "trade account_manage"
+  
+   authUrl.searchParams.set(
+  "scope",
+  "trade"
+
   );
 
   authUrl.searchParams.set("state", state);
