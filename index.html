@@ -213,3 +213,17 @@ renderDashboard();
 </script>
 </body>
   </html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://yjqgbqekwyqpvtiikghc.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_kgUBC364XrvimIABiYDdcQ_K9tzMwaA";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+console.log("BotForge Supabase connected");
+</script>
