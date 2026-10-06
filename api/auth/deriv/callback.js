@@ -10,6 +10,57 @@ import {
   createSession
 } from "../../lib/session.js";
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function parseCookies(req) {
+  const cookieHeader =
+    req.headers.cookie || "";
+
+  const cookies = {};
+
+  cookieHeader
+    .split(";")
+    .forEach(cookie => {
+      const parts =
+        cookie.trim().split("=");
+
+      if (parts.length >= 2) {
+        const name =
+          parts.shift();
+
+        const value =
+          parts.join("=");
+
+        try {
+          cookies[name] =
+            decodeURIComponent(value);
+        } catch {
+          cookies[name] = value;
+        }
+      }
+    });
+
+  return cookies;
+}
+
+function clearCookie(name) {
+  return [
+    `${name}=`,
+    "Path=/",
+    "HttpOnly",
+    "Secure",
+    "SameSite=Lax",
+    "Max-Age=0"
+  ].join("; ");
+}
+
 export default async function handler(req, res) {
   try {
     const CLIENT_ID =
@@ -82,28 +133,8 @@ export default async function handler(req, res) {
     // Read OAuth cookies
     // ---------------------------------------
 
-    const cookieHeader =
-      req.headers.cookie || "";
-
-    const cookies = {};
-
-    cookieHeader
-      .split(";")
-      .forEach(cookie => {
-        const parts =
-          cookie.trim().split("=");
-
-        if (parts.length >= 2) {
-          const name =
-            parts.shift();
-
-          const value =
-            parts.join("=");
-
-          cookies[name] =
-            decodeURIComponent(value);
-        }
-      });
+    const cookies =
+      parseCookies(req);
 
     const savedState =
       cookies.botforge_oauth_state;
@@ -170,7 +201,6 @@ export default async function handler(req, res) {
 
     // ---------------------------------------
     // Exchange authorization code
-    // for Deriv access token
     // ---------------------------------------
 
     const tokenResponse =
@@ -336,4 +366,190 @@ export default async function handler(req, res) {
               No Deriv Account Found
             </h2>
 
-            <
+            <p style="color:#ff6b81;">
+              BotForge could not find
+              a Deriv account.
+            </p>
+
+          </body>
+        </html>
+      `);
+    }
+
+    // ---------------------------------------
+    // Select account
+    // ---------------------------------------
+
+    const derivAccount =
+      accounts[0];
+
+    const derivAccountId =
+      derivAccount.account_id ||
+      derivAccount.loginid ||
+      derivAccount.id;
+
+    const accountType =
+      derivAccount.account_type ||
+      derivAccount.type ||
+      "unknown";
+
+    if (!derivAccountId) {
+      console.error(
+        "Deriv account ID missing:",
+        derivAccount
+      );
+
+      return res.status(400).send(`
+        <html>
+          <body style="
+            margin:0;
+            background:#060A1A;
+            color:white;
+            font-family:Arial;
+            text-align:center;
+            padding:40px;
+          ">
+
+            <h2>
+              Deriv Account ID Missing
+            </h2>
+
+            <p style="color:#aaa;">
+              Authorization succeeded but
+              BotForge could not identify
+              your Deriv account.
+            </p>
+
+          </body>
+        </html>
+      `);
+    }
+
+    console.log(
+      "Deriv account:",
+      derivAccountId
+    );
+
+    // ---------------------------------------
+    // Create internal BotForge user
+    // ---------------------------------------
+
+    const internalEmail =
+      `deriv_${String(
+        derivAccountId
+      ).toLowerCase()}@botforge.internal`;
+
+    let userId = null;
+
+    const {
+      data: existingUsers,
+      error: listUsersError
+    } =
+      await supabaseAdmin.auth.admin
+        .listUsers({
+          page: 1,
+          perPage: 1000
+        });
+
+    if (listUsersError) {
+      console.error(
+        "Supabase user lookup failed:",
+        listUsersError
+      );
+
+      throw listUsersError;
+    }
+
+    const existingUser =
+      existingUsers?.users?.find(
+        user =>
+          user.email === internalEmail
+      );
+
+    if (existingUser) {
+      userId =
+        existingUser.id;
+    } else {
+      const {
+        data: createdUser,
+        error: createUserError
+      } =
+        await supabaseAdmin.auth.admin
+          .createUser({
+            email:
+              internalEmail,
+
+            email_confirmed:
+              true
+          });
+
+      if (createUserError) {
+        console.error(
+          "Supabase user creation failed:",
+          createUserError
+        );
+
+        throw createUserError;
+      }
+
+      userId =
+        createdUser.user.id;
+    }
+
+    // ---------------------------------------
+    // Update BotForge profile
+    // ---------------------------------------
+
+    const {
+      error: profileError
+    } =
+      await supabaseAdmin
+        .from("profiles")
+        .upsert(
+          {
+            id: userId,
+            email: internalEmail,
+            full_name:
+              String(derivAccountId),
+            role: "user"
+          },
+          {
+            onConflict: "id"
+          }
+        );
+
+    if (profileError) {
+      console.error(
+        "Profile upsert failed:",
+        profileError
+      );
+
+      throw profileError;
+    }
+
+    // ---------------------------------------
+    // Save Deriv connection
+    // ---------------------------------------
+
+    const {
+      error: connectionError
+    } =
+      await supabaseAdmin
+        .from("deriv_connections")
+        .upsert(
+          {
+            user_id: userId,
+            deriv_account_id:
+              String(derivAccountId),
+            account_type:
+              String(accountType),
+            connected: true,
+            updated_at:
+              new Date().toISOString()
+          },
+          {
+            onConflict: "user_id"
+          }
+        );
+
+    if (connectionError)
