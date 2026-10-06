@@ -7,13 +7,12 @@ export default async function handler(req, res) {
 
     const {
       code,
-      state,
       error,
       error_description
     } = req.query;
 
     // ---------------------------------------
-    // 1. Check for OAuth error
+    // 1. Check for OAuth errors
     // ---------------------------------------
 
     if (error) {
@@ -49,9 +48,7 @@ export default async function handler(req, res) {
                 Deriv Login Error
               </h2>
 
-              <p>
-                ${error}
-              </p>
+              <p>${error}</p>
 
               <p style="color:#aaa">
                 ${error_description || ""}
@@ -65,58 +62,7 @@ export default async function handler(req, res) {
     }
 
     // ---------------------------------------
-    // 2. Get cookies
-    // ---------------------------------------
-
-    const cookieHeader = req.headers.cookie || "";
-
-    const cookies = {};
-
-    cookieHeader.split(";").forEach(cookie => {
-      const parts = cookie.trim().split("=");
-
-      if (parts.length >= 2) {
-        const name = parts.shift();
-        const value = parts.join("=");
-
-        cookies[name] = decodeURIComponent(value);
-      }
-    });
-
-    const savedState =
-      cookies.botforge_oauth_state;
-
-    const codeVerifier =
-      cookies.botforge_pkce_verifier;
-
-    // ---------------------------------------
-    // 3. Check state
-    // ---------------------------------------
-
-    if (!state || !savedState || state !== savedState) {
-      return res.status(400).send(`
-        <html>
-          <body style="
-            background:#060A1A;
-            color:white;
-            font-family:Arial;
-            text-align:center;
-            padding:40px;
-          ">
-
-            <h2>OAuth State Error</h2>
-
-            <p>
-              The OAuth security state could not be verified.
-            </p>
-
-          </body>
-        </html>
-      `);
-    }
-
-    // ---------------------------------------
-    // 4. Check authorization code
+    // 2. Check authorization code
     // ---------------------------------------
 
     if (!code) {
@@ -142,33 +88,7 @@ export default async function handler(req, res) {
     }
 
     // ---------------------------------------
-    // 5. Check PKCE verifier
-    // ---------------------------------------
-
-    if (!codeVerifier) {
-      return res.status(400).send(`
-        <html>
-          <body style="
-            background:#060A1A;
-            color:white;
-            font-family:Arial;
-            text-align:center;
-            padding:40px;
-          ">
-
-            <h2>PKCE Error</h2>
-
-            <p>
-              The PKCE verifier was not found.
-            </p>
-
-          </body>
-        </html>
-      `);
-    }
-
-    // ---------------------------------------
-    // 6. Exchange code for access token
+    // 3. Exchange authorization code
     // ---------------------------------------
 
     const tokenResponse = await fetch(
@@ -182,20 +102,10 @@ export default async function handler(req, res) {
         },
 
         body: new URLSearchParams({
-          grant_type:
-            "authorization_code",
-
-          client_id:
-            CLIENT_ID,
-
-          code:
-            code,
-
-          code_verifier:
-            codeVerifier,
-
-          redirect_uri:
-            REDIRECT_URI
+          grant_type: "authorization_code",
+          client_id: CLIENT_ID,
+          code: code,
+          redirect_uri: REDIRECT_URI
         })
       }
     );
@@ -204,10 +114,13 @@ export default async function handler(req, res) {
       await tokenResponse.json();
 
     // ---------------------------------------
-    // 7. Handle token exchange error
+    // 4. Handle token exchange failure
     // ---------------------------------------
 
-    if (!tokenResponse.ok || !tokenData.access_token) {
+    if (
+      !tokenResponse.ok ||
+      !tokenData.access_token
+    ) {
       console.error(
         "Deriv token exchange error:",
         tokenData
@@ -245,16 +158,13 @@ export default async function handler(req, res) {
     }
 
     // ---------------------------------------
-    // 8. SUCCESS
+    // 5. Success
     // ---------------------------------------
 
-    console.log(
-      "Deriv OAuth successful"
-    );
+    console.log("Deriv OAuth successful");
 
-    // IMPORTANT:
-    // We do NOT display the access token.
-    // The next step will securely store/use it.
+    // We deliberately do NOT display
+    // the access token.
 
     return res.status(200).send(`
       <html>
@@ -311,4 +221,52 @@ export default async function handler(req, res) {
             ">
               Your Deriv account has been
               successfully authorized with
-             
+              BotForge.
+            </p>
+
+            <p>
+              You can now continue to BotForge.
+            </p>
+
+          </div>
+
+        </body>
+
+      </html>
+    `);
+
+  } catch (error) {
+
+    console.error(
+      "BotForge OAuth callback error:",
+      error
+    );
+
+    return res.status(500).send(`
+      <html>
+
+        <body style="
+          background:#060A1A;
+          color:white;
+          font-family:Arial;
+          text-align:center;
+          padding:40px;
+        ">
+
+          <h2>
+            BotForge OAuth Error
+          </h2>
+
+          <p style="color:#ff6b81">
+            ${
+              error.message ||
+              "Unknown server error"
+            }
+          </p>
+
+        </body>
+
+      </html>
+    `);
+  }
+          }
