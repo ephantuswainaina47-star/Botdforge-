@@ -6,11 +6,13 @@
 <meta name="theme-color" content="#060A1A">
 <title>BotForge — Deriv Third Party Builder</title>
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
 
 :root{
 --bg:#060A1A;
@@ -29,9 +31,166 @@ color:#fff;
 min-height:100vh
 }
 
-button,input,textarea{font:inherit}
+button,input,textarea{
+font:inherit
+}
 
-button{cursor:pointer}
+button{
+cursor:pointer
+}
+
+.hidden{
+display:none!important
+}
+
+.loading-screen{
+position:fixed;
+inset:0;
+background:#060A1A;
+z-index:9999;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+gap:14px
+}
+
+.loading-logo{
+font-size:30px;
+font-weight:900;
+background:linear-gradient(90deg,#8B5CF6,#C4B5FD);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent
+}
+
+.spinner{
+width:30px;
+height:30px;
+border:3px solid #252D55;
+border-top-color:#8B5CF6;
+border-radius:50%;
+animation:spin .8s linear infinite
+}
+
+@keyframes spin{
+to{transform:rotate(360deg)}
+}
+
+/* AUTH */
+
+#authPage{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+background:
+radial-gradient(circle at top right,rgba(124,58,237,.20),transparent 35%),
+radial-gradient(circle at bottom left,rgba(99,102,241,.14),transparent 35%),
+var(--bg)
+}
+
+.auth-box{
+width:100%;
+max-width:430px;
+background:rgba(15,20,46,.97);
+border:1px solid var(--border);
+border-radius:24px;
+padding:30px 22px;
+box-shadow:0 25px 80px rgba(0,0,0,.45)
+}
+
+.auth-logo{
+text-align:center;
+font-size:32px;
+font-weight:900;
+background:linear-gradient(90deg,#8B5CF6,#C4B5FD);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent
+}
+
+.auth-subtitle{
+text-align:center;
+color:#8B91A8;
+font-size:13px;
+margin-top:6px
+}
+
+.deriv-login{
+width:100%;
+padding:15px;
+margin-top:28px;
+border:0;
+border-radius:14px;
+background:linear-gradient(90deg,#7C3AED,#6366F1);
+color:#fff;
+font-weight:800;
+font-size:15px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+box-shadow:0 10px 30px rgba(124,58,237,.25)
+}
+
+.deriv-login:hover{
+opacity:.92
+}
+
+.deriv-login:disabled{
+opacity:.6;
+cursor:not-allowed
+}
+
+.deriv-icon{
+width:30px;
+height:30px;
+border-radius:50%;
+background:#fff;
+color:#111;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:900
+}
+
+.auth-info{
+margin-top:18px;
+padding:13px;
+background:rgba(124,58,237,.08);
+border:1px solid rgba(124,58,237,.25);
+border-radius:12px;
+font-size:12px;
+line-height:1.5;
+color:#8B91A8;
+text-align:center
+}
+
+.auth-message{
+display:none;
+margin-top:14px;
+padding:12px;
+border-radius:10px;
+font-size:13px;
+line-height:1.5;
+background:rgba(124,58,237,.12);
+border:1px solid rgba(124,58,237,.35);
+color:#C4B5FD;
+text-align:center
+}
+
+.auth-message.show{
+display:block
+}
+
+.auth-footer{
+text-align:center;
+font-size:11px;
+color:#555B72;
+margin-top:20px
+}
+
+/* NAV */
 
 .nav{
 height:56px;
@@ -62,7 +221,6 @@ border-radius:10px;
 display:flex;
 align-items:center;
 justify-content:center;
-cursor:pointer;
 border:1px solid var(--border);
 color:#fff;
 font-size:19px
@@ -75,8 +233,15 @@ margin:0 auto;
 padding-bottom:80px
 }
 
-.page{display:none}
-.page.active{display:block}
+.page{
+display:none
+}
+
+.page.active{
+display:block
+}
+
+/* SIDEBAR */
 
 .side{
 position:fixed;
@@ -93,7 +258,9 @@ flex-direction:column;
 overflow-y:auto
 }
 
-.side.open{left:0}
+.side.open{
+left:0
+}
 
 .side-head{
 padding:18px 16px;
@@ -159,7 +326,11 @@ z-index:90;
 display:none
 }
 
-.overlay.show{display:block}
+.overlay.show{
+display:block
+}
+
+/* CARDS */
 
 .card,.basic-card{
 background:var(--card);
@@ -201,11 +372,6 @@ color:#fff;
 font-weight:700;
 cursor:pointer;
 margin-top:12px
-}
-
-.btn:disabled{
-opacity:.55;
-cursor:not-allowed
 }
 
 .stat-grid{
@@ -323,8 +489,7 @@ border:0;
 border-radius:14px;
 color:#fff;
 font-weight:700;
-margin-top:15px;
-cursor:pointer
+margin-top:15px
 }
 
 .ai-btn{
@@ -341,10 +506,6 @@ border-radius:20px;
 background:linear-gradient(180deg,#0F1A33,#0A1124);
 padding:20px;
 margin-top:14px
-}
-
-.platform-card h3{
-margin-bottom:5px
 }
 
 .features{
@@ -374,58 +535,7 @@ border:0;
 border-radius:14px;
 color:#fff;
 font-weight:700;
-margin-top:12px;
-cursor:pointer
-}
-
-.editor-tabs{
-display:flex;
-gap:6px;
-overflow:auto;
-padding:10px 0;
-position:sticky;
-top:56px;
-background:var(--bg);
-z-index:8
-}
-
-.tab-btn{
-background:#151A33;
-border:1px solid var(--border);
-color:#8B91A8;
-padding:8px 13px;
-border-radius:20px;
-font-size:11px;
-cursor:pointer;
-white-space:nowrap
-}
-
-.tab-btn.active{
-background:linear-gradient(90deg,#7C3AED,#6366F1);
-color:#fff
-}
-
-.editor-panel{
-display:none
-}
-
-.editor-panel.active{
-display:block
-}
-
-.row{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px
-}
-
-.color-input{
-height:46px;
-width:100%;
-background:#151A33;
-border:1px solid var(--border);
-border-radius:10px;
-padding:3px
+margin-top:12px
 }
 
 .notice{
@@ -444,10 +554,6 @@ text-align:center;
 padding:30px;
 border-style:dashed;
 color:#8B91A8
-}
-
-.hidden{
-display:none!important
 }
 
 .toast{
@@ -471,127 +577,6 @@ opacity:1;
 transform:translateX(-50%) translateY(0)
 }
 
-/* AUTH */
-
-#authPage{
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:20px;
-background:
-radial-gradient(circle at top right,rgba(124,58,237,.20),transparent 35%),
-radial-gradient(circle at bottom left,rgba(99,102,241,.14),transparent 35%),
-var(--bg)
-}
-
-.auth-box{
-width:100%;
-max-width:430px;
-background:rgba(15,20,46,.96);
-border:1px solid var(--border);
-border-radius:24px;
-padding:28px 22px;
-box-shadow:0 25px 80px rgba(0,0,0,.45)
-}
-
-.auth-logo{
-text-align:center;
-font-size:31px;
-font-weight:900;
-background:linear-gradient(90deg,#8B5CF6,#C4B5FD);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent
-}
-
-.auth-subtitle{
-text-align:center;
-color:#8B91A8;
-font-size:13px;
-margin-top:6px;
-margin-bottom:25px
-}
-
-.auth-tabs{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:6px;
-background:#0A0D1F;
-padding:5px;
-border-radius:12px;
-margin-bottom:20px
-}
-
-.auth-tab{
-border:0;
-padding:11px;
-border-radius:9px;
-background:transparent;
-color:#8B91A8;
-cursor:pointer
-}
-
-.auth-tab.active{
-background:#7C3AED;
-color:#fff
-}
-
-.auth-label{
-display:block;
-font-size:13px;
-color:#C4CAD9;
-margin-top:13px;
-margin-bottom:5px
-}
-
-.auth-input{
-width:100%;
-padding:14px;
-background:#151A33;
-border:1px solid var(--border);
-border-radius:12px;
-color:#fff;
-outline:none
-}
-
-.auth-input:focus{
-border-color:#7C3AED
-}
-
-.auth-button{
-width:100%;
-padding:14px;
-margin-top:18px;
-border:0;
-border-radius:13px;
-background:linear-gradient(90deg,#7C3AED,#6366F1);
-color:#fff;
-font-weight:800
-}
-
-.auth-message{
-display:none;
-margin-top:14px;
-padding:12px;
-border-radius:10px;
-font-size:13px;
-line-height:1.5;
-background:rgba(124,58,237,.12);
-border:1px solid rgba(124,58,237,.35);
-color:#C4B5FD
-}
-
-.auth-message.show{
-display:block
-}
-
-.auth-footer{
-text-align:center;
-font-size:11px;
-color:#555B72;
-margin-top:20px
-}
-
 .user-email{
 color:#A78BFA;
 font-size:11px;
@@ -610,154 +595,158 @@ color:#fff;
 cursor:pointer
 }
 
-.loading-screen{
-position:fixed;
-inset:0;
-background:#060A1A;
-z-index:999;
+.editor-tabs{
 display:flex;
-align-items:center;
-justify-content:center;
-flex-direction:column;
-gap:14px
+gap:6px;
+overflow:auto;
+padding:10px 0;
+position:sticky;
+top:56px;
+background:var(--bg);
+z-index:8
 }
 
-.loading-logo{
-font-size:28px;
-font-weight:900;
-color:#A78BFA
+.tab-btn{
+background:#151A33;
+border:1px solid var(--border);
+color:#8B91A8;
+padding:8px 13px;
+border-radius:20px;
+font-size:11px;
+white-space:nowrap
 }
 
-.spinner{
-width:32px;
-height:32px;
-border:3px solid #252D55;
-border-top-color:#8B5CF6;
-border-radius:50%;
-animation:spin .8s linear infinite
+.tab-btn.active{
+background:linear-gradient(90deg,#7C3AED,#6366F1);
+color:#fff
 }
 
-@keyframes spin{
-to{transform:rotate(360deg)}
+.row{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.color-input{
+height:46px;
+width:100%;
+background:#151A33;
+border:1px solid var(--border);
+border-radius:10px;
+padding:3px
 }
 
 @media(max-width:520px){
-.main{padding:13px}
-.features{grid-template-columns:1fr}
-.row{grid-template-columns:1fr}
-.side{width:290px}
-.auth-box{padding:24px 18px}
+.main{
+padding:13px
+}
+
+.features{
+grid-template-columns:1fr
+}
+
+.row{
+grid-template-columns:1fr
+}
+
+.side{
+width:290px
+}
+
+.auth-box{
+padding:25px 18px
+}
 }
 </style>
 </head>
 
 <body>
 
-<!-- AUTH LOADING -->
+<!-- LOADING -->
 <div id="loadingScreen" class="loading-screen">
-<div class="loading-logo">BotForge</div>
-<div class="spinner"></div>
-<div style="font-size:12px;color:#8B91A8">Checking your account...</div>
+
+<div class="loading-logo">
+BotForge
 </div>
 
-<!-- AUTH PAGE -->
+<div class="spinner"></div>
+
+<div style="font-size:12px;color:#8B91A8">
+Checking your BotForge session...
+</div>
+
+</div>
+
+
+<!-- AUTH -->
 <section id="authPage" class="hidden">
 
 <div class="auth-box">
 
-<div class="auth-logo">BotForge</div>
+<div class="auth-logo">
+BotForge
+</div>
 
 <div class="auth-subtitle">
 Deriv Third Party Builder
 </div>
 
-<div class="auth-tabs">
+<div style="
+text-align:center;
+margin-top:25px;
+">
 
-<button
-id="loginTab"
-class="auth-tab active"
-onclick="switchAuthMode('login')">
-Login
-</button>
+<div style="
+font-size:17px;
+font-weight:800;
+">
+Welcome to BotForge
+</div>
 
-<button
-id="signupTab"
-class="auth-tab"
-onclick="switchAuthMode('signup')">
-Create Account
-</button>
+<div style="
+font-size:13px;
+color:#8B91A8;
+margin-top:7px;
+line-height:1.5;
+">
+Build and manage your Deriv third-party platforms.
+</div>
 
 </div>
 
-<form id="authForm" onsubmit="handleAuth(event)">
-
-<label id="nameLabel" class="auth-label hidden">
-Full Name
-</label>
-
-<input
-id="authName"
-class="auth-input hidden"
-type="text"
-placeholder="Your name"
-autocomplete="name">
-
-<label class="auth-label">
-Email
-</label>
-
-<input
-id="authEmail"
-class="auth-input"
-type="email"
-placeholder="you@example.com"
-autocomplete="email"
-required>
-
-<label class="auth-label">
-Password
-</label>
-
-<input
-id="authPassword"
-class="auth-input"
-type="password"
-placeholder="••••••••"
-autocomplete="current-password"
-required>
-
-<div id="confirmPasswordWrap" class="hidden">
-
-<label class="auth-label">
-Confirm Password
-</label>
-
-<input
-id="authConfirmPassword"
-class="auth-input"
-type="password"
-placeholder="••••••••"
-autocomplete="new-password">
-</div>
-
 <button
-id="authButton"
-class="auth-button"
-type="submit">
-Login to BotForge
+id="derivLoginButton"
+class="deriv-login"
+type="button"
+onclick="loginWithDeriv()">
+
+<span class="deriv-icon">
+D
+</span>
+
+<span>
+Log in with Deriv
+</span>
+
 </button>
 
-</form>
+<div id="authMessage" class="auth-message">
+</div>
 
-<div id="authMessage" class="auth-message"></div>
+<div class="auth-info">
+🔐 You will be redirected to Deriv to securely authorize BotForge.
+<br><br>
+Your Deriv password is never entered or stored on BotForge.
+</div>
 
 <div class="auth-footer">
-Secure authentication powered by Supabase
+Secure authentication powered by Deriv OAuth
 </div>
 
 </div>
 
 </section>
+
 
 <!-- APP -->
 <div id="appShell" class="hidden">
@@ -766,22 +755,25 @@ Secure authentication powered by Supabase
 
 <button
 class="menu-btn"
-onclick="openSide()"
-aria-label="Open menu">
+onclick="openSide()">
 ☰
 </button>
 
-<div class="logo">BotForge</div>
+<div class="logo">
+BotForge
+</div>
 
 <div style="width:38px"></div>
 
 </header>
+
 
 <div
 class="overlay"
 id="overlay"
 onclick="closeSide()">
 </div>
+
 
 <aside class="side" id="side">
 
@@ -813,7 +805,7 @@ DERIV THIRD PARTY BUILDER
 
 </div>
 
-<!-- USER -->
+
 <div style="
 padding:13px 16px;
 border-bottom:1px solid rgba(255,255,255,.06);
@@ -826,128 +818,125 @@ letter-spacing:1px">
 SIGNED IN AS
 </div>
 
-<div id="sidebarUserEmail" class="user-email">
+<div
+id="sidebarUserEmail"
+class="user-email">
 Loading...
 </div>
 
+<div
+id="sidebarDerivAccount"
+style="
+font-size:10px;
+color:#6B7280;
+margin-top:5px">
+Deriv account: Loading...
 </div>
+
+</div>
+
 
 <nav style="padding:10px 0;flex:1">
 
-<div
-class="side-item active"
+<div class="side-item active"
 data-page="sites"
 onclick="go('sites')">
 <span class="si-icon">🌐</span>
 Sites
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="tutorials"
 onclick="go('tutorials')">
 <span class="si-icon">🎓</span>
 Tutorials
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="domains"
 onclick="go('domains')">
 <span class="si-icon">🔗</span>
 Domains
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="updates"
 onclick="go('updates')">
 <span class="si-icon">📰</span>
 Platform Updates
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="deploy"
 onclick="go('deploy')">
 <span class="si-icon">🚀</span>
 Deployments
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="comm"
 onclick="go('comm')">
 <span class="si-icon">💵</span>
 Commissions
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="earn"
 onclick="go('earn')">
 <span class="si-icon">💼</span>
 Earnings
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="announcements"
 onclick="go('announcements')">
 <span class="si-icon">📢</span>
 Announcements
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="editor"
 onclick="go('editor')">
 <span class="si-icon">✏️</span>
 Website Editor
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="xml"
 onclick="go('xml')">
 <span class="si-icon">🤖</span>
 XML Bots
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="aigen"
 onclick="go('aigen')">
 <span class="si-icon">✨</span>
 AI Bot Generator
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="signals"
 onclick="go('signals')">
 <span class="si-icon">⚡</span>
 AI Signals
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="store"
 onclick="go('store')">
 <span class="si-icon">🛍️</span>
 Bot Store
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="support"
 onclick="go('support')">
 <span class="si-icon">🎧</span>
 Support
 </div>
 
-<div
-class="side-item"
+<div class="side-item"
 data-page="settings"
 onclick="go('settings')">
 <span class="si-icon">⚙️</span>
@@ -955,6 +944,7 @@ Settings
 </div>
 
 </nav>
+
 
 <div style="
 padding:16px;
@@ -988,7 +978,9 @@ margin-top:15px">
 
 </aside>
 
+
 <main class="main">
+
 
 <!-- SITES -->
 
@@ -1013,7 +1005,7 @@ Your Sites
 color:#8B91A8;
 font-size:13px;
 margin-top:5px">
-Manage and deploy your Deriv third party builder sites
+Manage and deploy your Deriv third party builder sites.
 </p>
 
 <button
@@ -1022,59 +1014,37 @@ onclick="go('pick')">
 ＋ Create Site ✨
 </button>
 
+
 <div class="stat-grid">
 
 <div class="stat-box">
-<div class="stat-label">
-🌐 TOTAL SITES
-</div>
-<div
-class="stat-value"
-id="totalSites">
-0
-</div>
+<div class="stat-label">🌐 TOTAL SITES</div>
+<div class="stat-value" id="totalSites">0</div>
 </div>
 
 <div class="stat-box">
-<div
-class="stat-label"
-style="color:#22C55E">
+<div class="stat-label" style="color:#22C55E">
 〰 DEPLOYED
 </div>
-<div
-class="stat-value"
-id="deployedSites">
-0
-</div>
+<div class="stat-value" id="deployedSites">0</div>
 </div>
 
 <div class="stat-box">
-<div
-class="stat-label"
-style="color:#F59E0B">
+<div class="stat-label" style="color:#F59E0B">
 📝 DRAFTS
 </div>
-<div
-class="stat-value"
-id="draftSites">
-0
-</div>
+<div class="stat-value" id="draftSites">0</div>
 </div>
 
 <div class="stat-box">
-<div
-class="stat-label"
-style="color:#A78BFA">
+<div class="stat-label" style="color:#A78BFA">
 📈 THIS MONTH
 </div>
-<div
-class="stat-value"
-id="monthSites">
-0
-</div>
+<div class="stat-value" id="monthSites">0</div>
 </div>
 
 </div>
+
 
 <div style="margin-top:15px">
 
@@ -1085,13 +1055,6 @@ color:#6B7280">
 FILTER SITES
 </b>
 
-<p style="
-color:#6B7280;
-font-size:11px;
-margin-top:7px">
-Switch between all platforms or view one platform type only.
-</p>
-
 <div class="filter-row">
 
 <button class="pill active">
@@ -1099,7 +1062,7 @@ All (<span id="allCount">0</span>)
 </button>
 
 <button class="pill">
-Bot Platform (0)
+Bot Platform
 </button>
 
 </div>
@@ -1115,9 +1078,7 @@ Bot Platform (0)
 
 <section id="p-pick" class="page">
 
-<div
-class="back"
-onclick="go('sites')">
+<div class="back" onclick="go('sites')">
 ← Back to sites
 </div>
 
@@ -1126,8 +1087,9 @@ text-align:center;
 color:#8B91A8;
 font-size:14px;
 padding:5px">
-Both options end with the same live site — choose the workflow you prefer.
+Choose how you want to create your site.
 </p>
+
 
 <div class="choice recommended">
 
@@ -1141,9 +1103,7 @@ font-weight:700">
 ⭐ Recommended
 </span>
 
-<div
-class="choice-title"
-style="margin-top:13px">
+<div class="choice-title" style="margin-top:13px">
 
 <div class="choice-icon">
 ✨
@@ -1156,7 +1116,7 @@ style="margin-top:13px">
 <div style="
 color:#8B91A8;
 font-size:13px">
-Describe your site and let AI prepare the configuration
+Describe your site and let AI prepare the configuration.
 </div>
 
 </div>
@@ -1170,6 +1130,7 @@ Start with AI →
 </button>
 
 </div>
+
 
 <div class="choice">
 
@@ -1186,7 +1147,7 @@ Start with AI →
 <div style="
 color:#8B91A8;
 font-size:13px">
-For advanced users
+Configure your site manually.
 </div>
 
 </div>
@@ -1204,13 +1165,11 @@ Start Manual Setup →
 </section>
 
 
-<!-- AI ASSISTANT -->
+<!-- AI -->
 
 <section id="p-ai-assistant" class="page">
 
-<div
-class="back"
-onclick="go('pick')">
+<div class="back" onclick="go('pick')">
 ← Back
 </div>
 
@@ -1222,35 +1181,25 @@ AI Assistant
 color:#8B91A8;
 font-size:13px;
 margin-top:6px">
-Describe the site you want. AI configuration generation will be connected to the secure backend.
+Describe the site you want.
 </p>
 
 <div class="card">
 
-<label style="
-font-size:13px;
-color:#C4CAD9">
-Site name
-</label>
+<label>Site name</label>
 
 <input
 id="aiName"
 class="inp"
 placeholder="My Platform">
 
-<label style="
-font-size:13px;
-color:#C4CAD9">
-Describe your website
-</label>
+<label>Describe your website</label>
 
 <textarea
 id="aiPrompt"
 class="inp"
-style="
-min-height:120px;
-resize:vertical"
-placeholder="Example: Create a dark purple Deriv bot platform with bot cards, an analysis tool, AI scanner and account switcher.">
+style="min-height:120px;resize:vertical"
+placeholder="Example: Create a dark purple Deriv bot platform with bot cards, analysis tools and an AI scanner.">
 </textarea>
 
 <button
@@ -1268,10 +1217,8 @@ Generate Site Configuration
 
 <section id="p-platform" class="page">
 
-<div
-class="back"
-onclick="go('pick')">
-← Back to mode selection
+<div class="back" onclick="go('pick')">
+← Back
 </div>
 
 <div style="
@@ -1281,8 +1228,7 @@ margin-top:10px">
 <div style="
 font-size:11px;
 letter-spacing:3px;
-color:#6B7280;
-font-weight:700">
+color:#6B7280">
 STEP 2
 </div>
 
@@ -1296,10 +1242,11 @@ Choose your platform type
 color:#8B91A8;
 font-size:13px;
 margin-top:8px">
-Each platform is configured as a standalone branded site.
+Configure your standalone branded site.
 </p>
 
 </div>
+
 
 <div class="platform-card">
 
@@ -1327,7 +1274,7 @@ Automated trading bots
 color:#A1A8C3;
 font-size:14px;
 margin-top:14px">
-Build a Dbot-style interface with visual bot tools and editable site components.
+Build a Dbot-style interface with visual bot tools and editable components.
 </p>
 
 <div class="features">
@@ -1336,7 +1283,7 @@ Build a Dbot-style interface with visual bot tools and editable site components.
 <div>● Bot management</div>
 <div>● Bot Store</div>
 <div>● XML import/export</div>
-<div>● AI scanner interface</div>
+<div>● AI scanner</div>
 <div>● Analysis tools</div>
 
 </div>
@@ -1360,10 +1307,8 @@ Select Bot Platform →
 
 <section id="p-create" class="page">
 
-<div
-class="back"
-onclick="go('platform')">
-← Back to platform selection
+<div class="back" onclick="go('platform')">
+← Back
 </div>
 
 <div class="basic-card">
@@ -1376,14 +1321,11 @@ Basic Information
 color:#8B91A8;
 font-size:13px;
 margin-top:6px">
-Enter the core details for your new site.
+Enter the details for your new site.
 </p>
 
-<label style="
-display:block;
-margin-top:22px;
-font-weight:700">
-Domain *
+<label style="display:block;margin-top:22px;font-weight:700">
+Domain
 </label>
 
 <input
@@ -1392,23 +1334,14 @@ class="basic-input"
 placeholder="example.com">
 
 <button
-style="
-width:100%;
-padding:13px;
-background:transparent;
-border:1px solid #252D55;
-border-radius:12px;
-color:#fff;
-cursor:pointer"
-onclick="toast('Domain purchasing will be connected to a registrar API later')">
+class="pill"
+style="width:100%;margin-top:5px"
+onclick="toast('Domain purchasing will be connected later')">
 🛒 Buy / Connect Domain
 </button>
 
-<label style="
-display:block;
-margin-top:20px;
-font-weight:700">
-Site Name *
+<label style="display:block;margin-top:20px;font-weight:700">
+Site Name
 </label>
 
 <input
@@ -1416,11 +1349,8 @@ id="siteName"
 class="basic-input"
 placeholder="My Platform">
 
-<label style="
-display:block;
-margin-top:20px;
-font-weight:700">
-Site Title *
+<label style="display:block;margin-top:20px;font-weight:700">
+Site Title
 </label>
 
 <input
@@ -1428,10 +1358,7 @@ id="siteTitle"
 class="basic-input"
 placeholder="My Platform — Advanced Trading">
 
-<label style="
-display:block;
-margin-top:20px;
-font-weight:700">
+<label style="display:block;margin-top:20px;font-weight:700">
 Commission Markup
 </label>
 
@@ -1456,13 +1383,11 @@ min="0"
 max="3"
 step=".1"
 value="3"
-style="
-width:100%;
-accent-color:#7C3AED"
-oninput="markupValue.textContent=Number(this.value).toFixed(1)+'%'">
+style="width:100%;accent-color:#7C3AED"
+oninput="document.getElementById('markupValue').textContent=Number(this.value).toFixed(1)+'%'">
 
 <div class="notice">
-A production version should assign the appropriate Deriv application/OAuth configuration on the server. Do not expose secret credentials in this HTML.
+Production site credentials and Deriv secrets must remain on the secure backend.
 </div>
 
 <button
@@ -1488,9 +1413,7 @@ align-items:center">
 
 <div>
 
-<div
-class="back"
-onclick="go('sites')">
+<div class="back" onclick="go('sites')">
 ← Sites
 </div>
 
@@ -1508,10 +1431,7 @@ Save
 
 </div>
 
-<div
-id="editorTabs"
-class="editor-tabs">
-</div>
+<div id="editorTabs" class="editor-tabs"></div>
 
 <div id="editorContent"></div>
 
@@ -1524,10 +1444,7 @@ class="editor-tabs">
 
 <h1>Domains</h1>
 
-<p style="
-color:#8B91A8;
-font-size:13px;
-margin-top:5px">
+<p style="color:#8B91A8;font-size:13px;margin-top:5px">
 Manage domains for your generated sites.
 </p>
 
@@ -1540,7 +1457,7 @@ placeholder="example.com">
 
 <button
 class="btn"
-onclick="toast('Domain availability API will be connected here')">
+onclick="toast('Domain API will be connected later')">
 🛒 Check Availability
 </button>
 
@@ -1555,16 +1472,11 @@ onclick="toast('Domain availability API will be connected here')">
 
 <h1>Deployments</h1>
 
-<p style="
-color:#8B91A8;
-font-size:13px;
-margin-top:5px">
+<p style="color:#8B91A8;font-size:13px;margin-top:5px">
 Manage published sites.
 </p>
 
-<div
-id="deploymentList"
-class="card empty">
+<div id="deploymentList" class="card empty">
 No deployments yet.
 </div>
 
@@ -1579,19 +1491,15 @@ No deployments yet.
 
 <div class="card">
 
-<h3>
-Commission Dashboard
-</h3>
+<h3>Commission Dashboard</h3>
 
-<p style="
-color:#8B91A8;
-margin-top:7px">
-Production commission data will be loaded from your approved partner/application integration.
+<p style="color:#8B91A8;margin-top:7px">
+Commission data will be loaded from the secure backend.
 </p>
 
 <button
 class="btn"
-onclick="toast('Withdrawal workflow requires a secure backend')">
+onclick="toast('Withdrawal workflow will use the backend')">
 Request Withdrawal
 </button>
 
@@ -1616,7 +1524,7 @@ Request Withdrawal
 color:#8B91A8;
 font-size:13px;
 margin-top:8px">
-Earnings should be calculated from verified backend data.
+Earnings are calculated from verified backend data.
 </p>
 
 </div>
@@ -1624,117 +1532,65 @@ Earnings should be calculated from verified backend data.
 </section>
 
 
-<!-- TUTORIALS -->
+<!-- OTHER PAGES -->
 
 <section id="p-tutorials" class="page">
-
 <h1>Tutorials</h1>
-
 <div class="card">
 Learn how to create, configure and deploy a BotForge site.
 </div>
-
 </section>
 
-
-<!-- UPDATES -->
-
 <section id="p-updates" class="page">
-
 <h1>Platform Updates</h1>
-
 <div class="card">
 BotForge updates will appear here.
 </div>
-
 </section>
 
-
-<!-- ANNOUNCEMENTS -->
-
 <section id="p-announcements" class="page">
-
 <h1>Announcements</h1>
-
 <div class="card">
 Announcements will appear here.
 </div>
-
 </section>
-
-
-<!-- XML -->
 
 <section id="p-xml" class="page">
-
 <h1>XML Bots</h1>
-
 <div class="card">
-XML bot import/export tools can be connected here.
+XML bot import/export tools can be connected to the backend.
 </div>
-
 </section>
-
-
-<!-- AI GENERATOR -->
 
 <section id="p-aigen" class="page">
-
 <h1>AI Bot Generator</h1>
-
 <div class="card">
-Describe a bot strategy and connect an AI backend to generate a configuration.
+Describe a bot strategy and connect the AI backend.
 </div>
-
 </section>
-
-
-<!-- SIGNALS -->
 
 <section id="p-signals" class="page">
-
 <h1>AI Signals</h1>
-
 <div class="card">
-AI signal/scanner interface placeholder. Trading signals should be clearly presented as analysis, not guaranteed outcomes.
+AI scanner and analysis interface.
 </div>
-
 </section>
-
-
-<!-- STORE -->
 
 <section id="p-store" class="page">
-
 <h1>Bot Store</h1>
-
 <div class="card">
-Your marketplace for bot configurations can be built here.
+Your marketplace for bot configurations.
 </div>
-
 </section>
 
-
-<!-- SUPPORT -->
-
 <section id="p-support" class="page">
-
 <h1>Support</h1>
-
 <div class="card">
-
-<p>
-Support center placeholder.
-</p>
-
-<button
-class="btn"
-onclick="toast('Connect your support system here')">
+Support center.
+<button class="btn" onclick="toast('Support system will be connected later')">
 Contact Support
 </button>
-
 </div>
-
 </section>
 
 
@@ -1746,19 +1602,16 @@ Contact Support
 
 <div class="card">
 
-<p>
-BotForge settings
-</p>
+<p>BotForge Settings</p>
 
 <p style="
 color:#8B91A8;
 font-size:13px;
 margin-top:8px">
-Authentication, account, security and application settings are now connected to Supabase Auth.
+Your BotForge account is authenticated through Deriv OAuth.
 </p>
 
-<div
-style="
+<div style="
 margin-top:14px;
 padding:12px;
 background:#0A0D1F;
@@ -1781,6 +1634,15 @@ word-break:break-all">
 Loading...
 </div>
 
+<div
+id="settingsDerivAccount"
+style="
+margin-top:7px;
+color:#8B91A8;
+font-size:12px">
+Deriv account: Loading...
+</div>
+
 </div>
 
 <button
@@ -1795,10 +1657,8 @@ Sign Out
 
 </main>
 
-<div
-id="toast"
-class="toast">
-</div>
+
+<div id="toast" class="toast"></div>
 
 </div>
 
@@ -1806,41 +1666,16 @@ class="toast">
 <script>
 
 /* =========================================================
-   SUPABASE CONNECTION
-   ========================================================= */
-
-const SUPABASE_URL =
-"https://yjqgbqekwyqpvtiikghc.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-"sb_publishable_kgUBC364XrvimIABiYDdcQ_K9tzMwaA";
-
-const supabaseClient =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_PUBLISHABLE_KEY,
-{
-auth:{
-persistSession:true,
-autoRefreshToken:true,
-detectSessionInUrl:true
-}
-});
-
-console.log("BotForge Supabase connected");
-
-
-/* =========================================================
-   AUTH STATE
+   BOTFORGE BACKEND SESSION
    ========================================================= */
 
 let currentUser=null;
 let currentSession=null;
-let authMode='login';
+let currentDeriv=null;
 
 
 /* =========================================================
-   STORAGE / APP STATE
+   LOCAL APP STATE
    ========================================================= */
 
 const STORAGE_KEY='botforge_demo_sites_v1';
@@ -1875,75 +1710,14 @@ const editorTabs=[
 
 
 /* =========================================================
-   AUTH MODE
-   ========================================================= */
-
-function switchAuthMode(mode){
-
-authMode=mode;
-
-const loginTab=document.getElementById('loginTab');
-const signupTab=document.getElementById('signupTab');
-
-const nameLabel=document.getElementById('nameLabel');
-const nameInput=document.getElementById('authName');
-
-const confirmWrap=
-document.getElementById('confirmPasswordWrap');
-
-const button=
-document.getElementById('authButton');
-
-const password=
-document.getElementById('authPassword');
-
-const message=
-document.getElementById('authMessage');
-
-message.classList.remove('show');
-message.textContent='';
-
-if(mode==='login'){
-
-loginTab.classList.add('active');
-signupTab.classList.remove('active');
-
-nameLabel.classList.add('hidden');
-nameInput.classList.add('hidden');
-
-confirmWrap.classList.add('hidden');
-
-button.textContent='Login to BotForge';
-
-password.autocomplete='current-password';
-
-}else{
-
-signupTab.classList.add('active');
-loginTab.classList.remove('active');
-
-nameLabel.classList.remove('hidden');
-nameInput.classList.remove('hidden');
-
-confirmWrap.classList.remove('hidden');
-
-button.textContent='Create BotForge Account';
-
-password.autocomplete='new-password';
-
-}
-
-}
-
-
-/* =========================================================
    AUTH MESSAGE
    ========================================================= */
 
 function showAuthMessage(message){
 
-const box=
-document.getElementById('authMessage');
+const box=document.getElementById('authMessage');
+
+if(!box)return;
 
 box.textContent=message;
 box.classList.add('show');
@@ -1952,260 +1726,91 @@ box.classList.add('show');
 
 
 /* =========================================================
-   HANDLE LOGIN / SIGNUP
+   DERIV LOGIN
    ========================================================= */
 
-async function handleAuth(event){
-
-event.preventDefault();
-
-const email=
-document.getElementById('authEmail')
-.value
-.trim();
-
-const password=
-document.getElementById('authPassword')
-.value;
+function loginWithDeriv(){
 
 const button=
-document.getElementById('authButton');
+document.getElementById('derivLoginButton');
 
-if(!email){
+showAuthMessage(
+'Redirecting you to Deriv securely...'
+);
 
-showAuthMessage('Please enter your email.');
-return;
-
-}
-
-if(!password){
-
-showAuthMessage('Please enter your password.');
-return;
-
-}
+if(button){
 
 button.disabled=true;
 
-button.textContent=
-authMode==='login'
-?'Logging in...'
-:'Creating account...';
+button.innerHTML=`
+<span class="spinner"
+style="
+width:18px;
+height:18px;
+border-width:2px;
+"></span>
 
-try{
-
-if(authMode==='login'){
-
-const {
-data,
-error
-}=await supabaseClient.auth.signInWithPassword({
-email:email,
-password:password
-});
-
-if(error){
-
-showAuthMessage(
-getFriendlyAuthError(error)
-);
-
-button.disabled=false;
-button.textContent='Login to BotForge';
-
-return;
+<span>
+Connecting to Deriv...
+</span>
+`;
 
 }
 
-if(data.session){
-
-await handleSignedInUser(
-data.user,
-data.session
-);
-
-}
-
-}else{
-
-const name=
-document.getElementById('authName')
-.value
-.trim();
-
-const confirmPassword=
-document.getElementById('authConfirmPassword')
-.value;
-
-if(password.length<6){
-
-showAuthMessage(
-'Password must be at least 6 characters.'
-);
-
-button.disabled=false;
-button.textContent='Create BotForge Account';
-
-return;
-
-}
-
-if(password!==confirmPassword){
-
-showAuthMessage(
-'Passwords do not match.'
-);
-
-button.disabled=false;
-button.textContent='Create BotForge Account';
-
-return;
-
-}
-
-const {
-data,
-error
-}=await supabaseClient.auth.signUp({
-
-email:email,
-
-password:password,
-
-options:{
-emailRedirectTo:
-window.location.origin,
-
-data:{
-full_name:name||null
-}
-}
-
-});
-
-if(error){
-
-showAuthMessage(
-getFriendlyAuthError(error)
-);
-
-button.disabled=false;
-button.textContent='Create BotForge Account';
-
-return;
-
-}
-
-/*
-Supabase may require email confirmation.
-In that case user exists but session is null.
-*/
-
-if(data.session){
-
-await handleSignedInUser(
-data.user,
-data.session
-);
-
-}else{
-
-showAuthMessage(
-'Account created successfully. Please check your email and confirm your account before logging in.'
-);
-
-button.disabled=false;
-button.textContent='Create BotForge Account';
-
-}
-
-}
-
-}catch(error){
-
-console.error(error);
-
-showAuthMessage(
-error.message||'Authentication failed. Please try again.'
-);
-
-button.disabled=false;
-
-button.textContent=
-authMode==='login'
-?'Login to BotForge'
-:'Create BotForge Account';
-
-}
+window.location.href=
+'/api/auth/deriv/start';
 
 }
 
 
 /* =========================================================
-   FRIENDLY AUTH ERRORS
-   ========================================================= */
-
-function getFriendlyAuthError(error){
-
-const msg=
-String(error?.message||error||'');
-
-if(msg.toLowerCase().includes('invalid login credentials')){
-return 'Incorrect email or password.';
-}
-
-if(msg.toLowerCase().includes('email not confirmed')){
-return 'Please confirm your email before logging in.';
-}
-
-if(msg.toLowerCase().includes('password')){
-return msg;
-}
-
-if(msg.toLowerCase().includes('user already registered')){
-return 'This email is already registered. Try logging in instead.';
-}
-
-return msg||'Authentication failed.';
-
-}
-
-
-/* =========================================================
-   CHECK AUTH
+   CHECK BOTFORGE BACKEND SESSION
    ========================================================= */
 
 async function checkAuth(){
 
 try{
 
-const {
-data,
-error
-}=await supabaseClient.auth.getSession();
-
-if(error){
-
-console.error(
-'Session error:',
-error
+const response=
+await fetch(
+'/api/auth/session',
+{
+method:'GET',
+credentials:'include',
+headers:{
+'Accept':'application/json'
+}
+}
 );
 
-showAuth();
+if(!response.ok){
 
-return;
+throw new Error(
+'Session request failed: '+response.status
+);
 
 }
 
-if(data.session){
+const data=
+await response.json();
 
-currentSession=data.session;
-currentUser=data.session.user;
-
-await handleSignedInUser(
-currentUser,
-currentSession
+console.log(
+'BotForge backend session:',
+data
 );
+
+if(
+data.authenticated &&
+data.user
+){
+
+currentUser=data.user;
+
+currentSession=data.session||null;
+
+currentDeriv=data.deriv||null;
+
+showApp();
 
 }else{
 
@@ -2215,113 +1820,12 @@ showAuth();
 
 }catch(error){
 
-console.error(error);
+console.error(
+'Backend session error:',
+error
+);
+
 showAuth();
-
-}
-
-}
-
-
-/* =========================================================
-   SIGNED IN USER
-   ========================================================= */
-
-async function handleSignedInUser(
-user,
-session
-){
-
-currentUser=user;
-currentSession=session;
-
-document.getElementById(
-'loadingScreen'
-).classList.add('hidden');
-
-document.getElementById(
-'authPage'
-).classList.add('hidden');
-
-document.getElementById(
-'appShell'
-).classList.remove('hidden');
-
-const email=
-user.email||'Unknown account';
-
-const emailEl=
-document.getElementById(
-'sidebarUserEmail'
-);
-
-if(emailEl){
-emailEl.textContent=email;
-}
-
-const settingsEmail=
-document.getElementById(
-'settingsEmail'
-);
-
-if(settingsEmail){
-settingsEmail.textContent=email;
-}
-
-await ensureProfile(user);
-
-renderDashboard();
-
-}
-
-
-/* =========================================================
-   ENSURE PROFILE
-   ========================================================= */
-
-async function ensureProfile(user){
-
-if(!user||!user.id){
-return;
-}
-
-try{
-
-const {
-data,
-error
-}=await supabaseClient
-.from('profiles')
-.select('id,email,full_name,role')
-.eq('id',user.id)
-.maybeSingle();
-
-if(error){
-
-console.warn(
-'Profile lookup:',
-error.message
-);
-
-return;
-
-}
-
-if(data){
-
-console.log(
-'BotForge profile loaded:',
-data
-);
-
-}
-
-}catch(error){
-
-console.warn(
-'Profile check failed:',
-error
-);
 
 }
 
@@ -2350,6 +1854,86 @@ document.getElementById(
 
 
 /* =========================================================
+   SHOW APP
+   ========================================================= */
+
+function showApp(){
+
+document.getElementById(
+'loadingScreen'
+).classList.add('hidden');
+
+document.getElementById(
+'authPage'
+).classList.add('hidden');
+
+document.getElementById(
+'appShell'
+).classList.remove('hidden');
+
+updateUserDisplay();
+
+renderDashboard();
+
+}
+
+
+/* =========================================================
+   USER DISPLAY
+   ========================================================= */
+
+function updateUserDisplay(){
+
+const email=
+currentUser?.email||
+'Deriv account';
+
+const derivId=
+currentDeriv?.account_id||
+'Connected';
+
+const sidebarEmail=
+document.getElementById(
+'sidebarUserEmail'
+);
+
+const settingsEmail=
+document.getElementById(
+'settingsEmail'
+);
+
+const sidebarDeriv=
+document.getElementById(
+'sidebarDerivAccount'
+);
+
+const settingsDeriv=
+document.getElementById(
+'settingsDerivAccount'
+);
+
+if(sidebarEmail){
+sidebarEmail.textContent=email;
+}
+
+if(settingsEmail){
+settingsEmail.textContent=email;
+}
+
+if(sidebarDeriv){
+sidebarDeriv.textContent=
+'Deriv account: '+derivId;
+}
+
+if(settingsDeriv){
+settingsDeriv.textContent=
+'Deriv account: '+derivId;
+}
+
+}
+
+
+/* =========================================================
    LOGOUT
    ========================================================= */
 
@@ -2357,112 +1941,55 @@ async function logout(){
 
 try{
 
-const {
-error
-}=await supabaseClient.auth.signOut();
-
-if(error){
-
-toast(
-'Logout failed: '+error.message
+const response=
+await fetch(
+'/api/auth/logout',
+{
+method:'POST',
+credentials:'include'
+}
 );
 
-return;
+if(!response.ok){
+
+console.warn(
+'Logout endpoint returned:',
+response.status
+);
 
 }
-
-currentUser=null;
-currentSession=null;
-
-closeSide();
-
-document.getElementById(
-'appShell'
-).classList.add('hidden');
-
-document.getElementById(
-'authPage'
-).classList.remove('hidden');
-
-document.getElementById(
-'authForm'
-).reset();
-
-switchAuthMode('login');
-
-toast('Signed out successfully.');
 
 }catch(error){
 
-console.error(error);
-
-toast(
-'Could not sign out.'
+console.error(
+'Logout error:',
+error
 );
 
 }
 
-}
+/*
+Clear the browser-side application state.
+*/
 
-
-/* =========================================================
-   AUTH STATE LISTENER
-   ========================================================= */
-
-supabaseClient.auth.onAuthStateChange(
-(event,session)=>{
-
-console.log(
-'BotForge auth event:',
-event
-);
-
-if(event==='SIGNED_IN' && session){
-
-currentSession=session;
-currentUser=session.user;
-
-handleSignedInUser(
-session.user,
-session
-);
-
-}
-
-if(event==='SIGNED_OUT'){
-
-currentSession=null;
 currentUser=null;
+currentSession=null;
+currentDeriv=null;
+
+closeSide();
 
 showAuth();
 
-}
-
-if(event==='TOKEN_REFRESHED' && session){
-
-currentSession=session;
-currentUser=session.user;
-
-}
-
-}
+showAuthMessage(
+'Signed out successfully.'
 );
+
+}
 
 
 /* =========================================================
-   APP NAVIGATION
+   NAVIGATION
    ========================================================= */
-
-function saveSites(){
-
-localStorage.setItem(
-STORAGE_KEY,
-JSON.stringify(sites)
-);
-
-renderDashboard();
-
-}
 
 function openSide(){
 
@@ -2475,6 +2002,7 @@ document.getElementById(
 ).classList.add('show');
 
 }
+
 
 function closeSide(){
 
@@ -2489,10 +2017,6 @@ document.getElementById(
 }
 
 
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
 function go(id){
 
 document
@@ -2501,28 +2025,32 @@ document
 p=>p.classList.remove('active')
 );
 
-const el=
-document.getElementById('p-'+id);
+const page=
+document.getElementById(
+'p-'+id
+);
 
-if(el){
+if(page){
 
-el.classList.add('active');
+page.classList.add('active');
 
 }else{
 
-document
-.getElementById('p-sites')
-.classList.add('active');
+document.getElementById(
+'p-sites'
+).classList.add('active');
 
 }
 
 document
 .querySelectorAll('.side-item')
 .forEach(
-x=>x.classList.toggle(
+item=>{
+item.classList.toggle(
 'active',
-x.dataset.page===id
-)
+item.dataset.page===id
+);
+}
 );
 
 closeSide();
@@ -2531,15 +2059,6 @@ window.scrollTo({
 top:0,
 behavior:'smooth'
 });
-
-
-/*
-Important fix:
-The old version called openEditor()
-from go('editor'), while openEditor()
-called go('editor') again. That could
-create a recursive loop.
-*/
 
 if(id==='editor'){
 
@@ -2565,12 +2084,12 @@ renderEditor();
    TOAST
    ========================================================= */
 
-function toast(msg){
+function toast(message){
 
 const t=
 document.getElementById('toast');
 
-t.textContent=msg;
+t.textContent=message;
 
 t.classList.add('show');
 
@@ -2580,7 +2099,9 @@ window.__toast
 
 window.__toast=
 setTimeout(
-()=>t.classList.remove('show'),
+()=>{
+t.classList.remove('show');
+},
 2600
 );
 
@@ -2606,7 +2127,7 @@ go('create');
 
 
 /* =========================================================
-   AI ACCESS CHECK
+   AI ACCESS
    ========================================================= */
 
 async function openAIWithAccessCheck(){
@@ -2621,27 +2142,20 @@ return;
 
 try{
 
-const {
-data,
-error
-}=await supabaseClient
-.from('ai_access')
-.select('unlocked')
-.eq('user_id',currentUser.id)
-.maybeSingle();
-
-if(error){
-
-console.warn(
-'AI access check:',
-error.message
+const response=
+await fetch(
+'/api/ai/access',
+{
+credentials:'include'
+}
 );
 
-/*
-For now we allow the UI to open.
-The $2 payment gate will be connected
-to the payment backend next.
-*/
+if(response.ok){
+
+const data=
+await response.json();
+
+if(data.unlocked){
 
 go('ai-assistant');
 
@@ -2649,32 +2163,20 @@ return;
 
 }
 
-if(data?.unlocked){
-
-go('ai-assistant');
-
-}else{
-
-toast(
-'AI Assistance requires the $2 one-time unlock.'
-);
-
-setTimeout(
-()=>{
-go('ai-assistant');
-},
-500
-);
-
 }
 
 }catch(error){
 
-console.error(error);
-
-go('ai-assistant');
+console.warn(
+'AI access check unavailable:',
+error
+);
 
 }
+
+toast(
+'AI Assistance requires the $2 one-time unlock.'
+);
 
 }
 
@@ -2689,7 +2191,8 @@ const name=
 document
 .getElementById('aiName')
 .value
-.trim()||'My AI Platform';
+.trim()||
+'My AI Platform';
 
 const prompt=
 document
@@ -2700,7 +2203,7 @@ document
 if(!prompt){
 
 toast(
-'Describe the website first'
+'Describe the website first.'
 );
 
 return;
@@ -2719,7 +2222,7 @@ name+' — AI Trading Platform';
 go('platform');
 
 toast(
-'AI request prepared. Choose Bot Platform to continue.'
+'AI configuration prepared.'
 );
 
 }
@@ -2747,12 +2250,13 @@ const title=
 document
 .getElementById('siteTitle')
 .value
-.trim()||name;
+.trim()||
+name;
 
 if(!name){
 
 toast(
-'Enter a site name'
+'Enter a site name.'
 );
 
 return;
@@ -2773,8 +2277,7 @@ domain||'not-connected',
 
 title:title,
 
-platform:
-selectedPlatform,
+platform:selectedPlatform,
 
 markup:
 Number(
@@ -2813,8 +2316,24 @@ editorSiteId=site.id;
 go('sites');
 
 toast(
-'Site created and saved as a draft'
+'Site created and saved as a draft.'
 );
+
+}
+
+
+/* =========================================================
+   SAVE LOCAL DEMO DATA
+   ========================================================= */
+
+function saveSites(){
+
+localStorage.setItem(
+STORAGE_KEY,
+JSON.stringify(sites)
+);
+
+renderDashboard();
 
 }
 
@@ -2828,48 +2347,82 @@ function renderDashboard(){
 const total=
 document.getElementById('totalSites');
 
-const all=
-document.getElementById('allCount');
-
-const deployedEl=
-document.getElementById('deployedSites');
-
-const draftEl=
-document.getElementById('draftSites');
-
-const monthEl=
-document.getElementById('monthSites');
-
 if(!total)return;
-
-total.textContent=sites.length;
-
-all.textContent=sites.length;
 
 const deployed=
 sites.filter(
 s=>s.status==='deployed'
 ).length;
 
-deployedEl.textContent=deployed;
+total.textContent=
+sites.length;
 
-draftEl.textContent=
+document.getElementById(
+'allCount'
+).textContent=
+sites.length;
+
+document.getElementById(
+'deployedSites'
+).textContent=
+deployed;
+
+document.getElementById(
+'draftSites'
+).textContent=
 sites.length-deployed;
 
-monthEl.textContent=
+document.getElementById(
+'monthSites'
+).textContent=
 sites.filter(
-s=>new Date(s.createdAt).getMonth()===
+s=>
+new Date(s.createdAt).getMonth()===
 new Date().getMonth()
 ).length;
 
+
 const list=
-document.getElementById('siteList');
+document.getElementById(
+'siteList'
+);
 
 if(!list)return;
 
-list.innerHTML=
-sites.length?
+if(!sites.length){
 
+list.innerHTML=`
+
+<div class="card empty">
+
+<div>
+No sites yet
+</div>
+
+<p style="
+font-size:12px;
+margin-top:7px">
+Create your first site to get started.
+</p>
+
+<button
+class="create-purple"
+style="
+height:43px;
+font-size:14px"
+onclick="go('pick')">
+
+＋ Create Site ✨
+
+</button>
+
+</div>
+
+`;
+
+}else{
+
+list.innerHTML=
 sites.map(
 s=>`
 
@@ -2882,9 +2435,7 @@ gap:10px">
 
 <div>
 
-<b>
-${esc(s.name)}
-</b>
+<b>${esc(s.name)}</b>
 
 <div style="
 color:#8B91A8;
@@ -2934,38 +2485,10 @@ ${s.status==='deployed'?'Redeploy':'Deploy'}
 </div>
 
 `
-).join('')
+).join('');
 
-:
+}
 
-`
-
-<div class="card empty">
-
-<div>
-No sites yet
-</div>
-
-<p style="
-font-size:12px;
-margin-top:7px">
-Create your first site to get started.
-</p>
-
-<button
-class="create-purple"
-style="
-height:43px;
-font-size:14px"
-onclick="go('pick')">
-
-＋ Create Site ✨
-
-</button>
-
-</div>
-
-`;
 
 const deploymentList=
 document.getElementById(
@@ -2974,23 +2497,22 @@ document.getElementById(
 
 if(deploymentList){
 
-deploymentList.innerHTML=
-deployed?
-
-sites
-.filter(
+const deployedSites=
+sites.filter(
 s=>s.status==='deployed'
-)
-.map(
+);
+
+deploymentList.innerHTML=
+deployedSites.length?
+
+deployedSites.map(
 s=>`
 
 <div style="
 padding:10px 0;
 border-bottom:1px solid #1E264E">
 
-<b>
-${esc(s.name)}
-</b>
+<b>${esc(s.name)}</b>
 
 <div style="
 color:#8B91A8;
@@ -3005,10 +2527,8 @@ ${esc(s.domain)}
 </div>
 
 `
-)
-.join('')
+).join(''):
 
-:
 'No deployments yet.';
 
 }
@@ -3040,7 +2560,7 @@ function openEditor(id){
 if(!id){
 
 toast(
-'Create a site first'
+'Create a site first.'
 );
 
 go('pick');
@@ -3060,10 +2580,6 @@ renderEditor();
 }
 
 
-/* =========================================================
-   RENDER EDITOR
-   ========================================================= */
-
 function renderEditor(){
 
 const s=
@@ -3073,19 +2589,18 @@ x=>x.id===editorSiteId
 
 if(!s)return;
 
-const editorTabsEl=
+const tabs=
 document.getElementById(
 'editorTabs'
 );
 
-const editorContentEl=
+const content=
 document.getElementById(
 'editorContent'
 );
 
-editorTabsEl.innerHTML=
-editorTabs
-.map(
+tabs.innerHTML=
+editorTabs.map(
 t=>`
 
 <button
@@ -3097,21 +2612,18 @@ ${t}
 </button>
 
 `
-)
-.join('');
+).join('');
 
-let c='';
+let html='';
 
 
 if(editorTab==='Themes'){
 
-c=`
+html=`
 
 <div class="card">
 
-<h3>
-Theme
-</h3>
+<h3>Theme</h3>
 
 <p style="
 color:#8B91A8;
@@ -3123,12 +2635,10 @@ ${esc(s.name)}.
 
 </p>
 
-<div
-class="row"
-style="margin-top:14px">
+<div class="row" style="margin-top:14px">
 
 <button
-class="pill active"
+class="pill"
 onclick="setSetting('theme','Midnight Purple')">
 
 Midnight Purple
@@ -3154,31 +2664,25 @@ Midnight Blue
 
 else if(editorTab==='Basic Info'){
 
-c=`
+html=`
 
 <div class="card">
 
-<label>
-Site Name
-</label>
+<label>Site Name</label>
 
 <input
 id="edName"
 class="inp"
 value="${escAttr(s.name)}">
 
-<label>
-Site Title
-</label>
+<label>Site Title</label>
 
 <input
 id="edTitle"
 class="inp"
 value="${escAttr(s.title)}">
 
-<label>
-Domain
-</label>
+<label>Domain</label>
 
 <input
 id="edDomain"
@@ -3188,9 +2692,7 @@ value="${escAttr(s.domain)}">
 <button
 class="btn"
 onclick="saveBasic()">
-
 Save Basic Info
-
 </button>
 
 </div>
@@ -3202,38 +2704,30 @@ Save Basic Info
 
 else if(editorTab==='Theme Colors'){
 
-c=`
+html=`
 
 <div class="card">
 
-<h3>
-Theme Colors
-</h3>
+<h3>Theme Colors</h3>
 
-<div
-class="row"
-style="margin-top:12px">
+<div class="row" style="margin-top:12px">
 
 <label>
 Primary
-
 <input
 id="primaryColor"
 class="color-input"
 type="color"
 value="${s.settings.primary}">
-
 </label>
 
 <label>
 Secondary
-
 <input
 id="secondaryColor"
 class="color-input"
 type="color"
 value="${s.settings.secondary}">
-
 </label>
 
 </div>
@@ -3241,215 +2735,37 @@ value="${s.settings.secondary}">
 <button
 class="btn"
 onclick="saveColors()">
-
 Save Colors
-
 </button>
 
 </div>
 
 `;
 
-}
+}else{
 
-
-else if(editorTab==='Branding'){
-
-c=
-settingCard(
-'Branding',
-'Logo, favicon, brand name and public identity.'
-);
-
-}
-
-
-else if(editorTab==='Trading Engine'){
-
-c=
-settingCard(
-'Trading Engine',
-'Connect your approved Deriv API/backend trading layer here. Keep credentials server-side.'
-);
-
-}
-
-
-else if(editorTab==='OAuth'){
-
-c=
-settingCard(
-'Deriv OAuth',
-'Configure your registered OAuth client and redirect URI on the backend.'
-);
-
-}
-
-
-else if(editorTab==='Loader'){
-
-c=
-toggleCard(
-'Loader',
-'loader',
-'Controls the loading screen on the generated site.',
-s.settings.loader
-);
-
-}
-
-
-else if(editorTab==='AI Scanners'){
-
-c=
-toggleCard(
-'AI Scanners',
-'aiScanners',
-'Enable the scanner interface.',
-s.settings.aiScanners
-);
-
-}
-
-
-else if(editorTab==='Analysis Tool'){
-
-c=
-toggleCard(
-'Analysis Tool',
-'analysisTool',
-'Enable the analysis-tool interface.',
-s.settings.analysisTool
-);
-
-}
-
-
-else if(editorTab==='Bot Cards'){
-
-c=
-settingCard(
-'Bot Cards',
-'Configure bot cards, descriptions, visibility and actions.'
-);
-
-}
-
-
-else if(editorTab==='Account Switch'){
-
-c=
-settingCard(
-'Account Switch',
-'Configure demo/real account presentation through the secure backend.'
-);
-
-}
-
-
-else if(editorTab==='Custom Blocks'){
-
-c=
-settingCard(
-'Custom Blocks',
-'Add reusable blocks to the generated site.'
-);
-
-}
-
-
-else if(editorTab==='Tab Config'){
-
-c=
-settingCard(
-'Tab Config',
-'Choose which tabs appear on the generated site.'
-);
-
-}
-
-
-else if(editorTab==='Tab Style'){
-
-c=
-settingCard(
-'Tab Style',
-'Configure navigation layout and active-state styling.'
-);
-
-}
-
-
-else if(editorTab==='Fast Trader'){
-
-c=
-settingCard(
-'Fast Trader',
-'Configure the fast-trading interface. Actual trading must use the approved backend/API.'
-);
-
-}
-
-
-else if(editorTab==='Referral'){
-
-c=
-settingCard(
-'Referral',
-'Configure referral links and attribution through your approved partner setup.'
-);
-
-}
-
-
-else if(editorTab==='Social Links'){
-
-c=
-settingCard(
-'Social Links',
-'Add public social/community links.'
-);
-
-}
-
-
-editorContentEl.innerHTML=c;
-
-}
-
-
-/* =========================================================
-   EDITOR HELPERS
-   ========================================================= */
-
-function settingCard(
-title,
-desc
-){
-
-return `
+html=`
 
 <div class="card">
 
-<h3>
-${title}
-</h3>
+<h3>${esc(editorTab)}</h3>
 
 <p style="
 color:#8B91A8;
 font-size:13px;
-margin-top:7px">
+margin-top:7px;
+line-height:1.5">
 
-${desc}
+Configure ${esc(editorTab)}
+for this BotForge site.
+Production integrations will use the secure backend.
 
 </p>
 
 <button
 class="btn"
-onclick="toast('${title} settings saved')">
-
+onclick="toast('Settings saved')">
 Save Settings
-
 </button>
 
 </div>
@@ -3458,60 +2774,21 @@ Save Settings
 
 }
 
-
-function toggleCard(
-title,
-key,
-desc,
-val
-){
-
-return `
-
-<div class="card">
-
-<h3>
-${title}
-</h3>
-
-<p style="
-color:#8B91A8;
-font-size:13px;
-margin-top:7px">
-
-${desc}
-
-</p>
-
-<button
-class="btn"
-onclick="setSetting('${key}',${!val})">
-
-${val?'Enabled':'Disabled'}
-— Toggle
-
-</button>
-
-</div>
-
-`;
+content.innerHTML=html;
 
 }
 
 
-function setEditorTab(t){
+function setEditorTab(tab){
 
-editorTab=t;
+editorTab=tab;
 
 renderEditor();
 
 }
 
 
-function setSetting(
-key,
-val
-){
+function setSetting(key,value){
 
 const s=
 sites.find(
@@ -3520,14 +2797,14 @@ x=>x.id===editorSiteId
 
 if(!s)return;
 
-s.settings[key]=val;
+s.settings[key]=value;
 
 saveSites();
 
 renderEditor();
 
 toast(
-'Setting saved'
+'Setting saved.'
 );
 
 }
@@ -3543,29 +2820,26 @@ x=>x.id===editorSiteId
 if(!s)return;
 
 s.name=
-document
-.getElementById('edName')
-.value
-.trim()||s.name;
+document.getElementById('edName')
+.value.trim()||
+s.name;
 
 s.title=
-document
-.getElementById('edTitle')
-.value
-.trim()||s.title;
+document.getElementById('edTitle')
+.value.trim()||
+s.title;
 
 s.domain=
-document
-.getElementById('edDomain')
-.value
-.trim()||s.domain;
+document.getElementById('edDomain')
+.value.trim()||
+s.domain;
 
 saveSites();
 
 renderEditor();
 
 toast(
-'Basic information saved'
+'Basic information saved.'
 );
 
 }
@@ -3581,13 +2855,11 @@ x=>x.id===editorSiteId
 if(!s)return;
 
 s.settings.primary=
-document
-.getElementById('primaryColor')
+document.getElementById('primaryColor')
 .value;
 
 s.settings.secondary=
-document
-.getElementById('secondaryColor')
+document.getElementById('secondaryColor')
 .value;
 
 saveSites();
@@ -3595,7 +2867,7 @@ saveSites();
 renderEditor();
 
 toast(
-'Theme colors saved'
+'Theme colors saved.'
 );
 
 }
@@ -3606,7 +2878,7 @@ function saveEditor(){
 saveSites();
 
 toast(
-'Editor changes saved'
+'Editor changes saved.'
 );
 
 }
@@ -3630,19 +2902,19 @@ s.status='deployed';
 saveSites();
 
 toast(
-'Site marked as deployed. Connect a deployment provider in the backend for real publishing.'
+'Site marked as deployed.'
 );
 
 }
 
 
 /* =========================================================
-   ESCAPE HTML
+   HTML ESCAPING
    ========================================================= */
 
-function esc(v){
+function esc(value){
 
-return String(v).replace(
+return String(value).replace(
 /[&<>"']/g,
 m=>({
 
@@ -3658,15 +2930,15 @@ m=>({
 }
 
 
-function escAttr(v){
+function escAttr(value){
 
-return esc(v);
+return esc(value);
 
 }
 
 
 /* =========================================================
-   START APPLICATION
+   START
    ========================================================= */
 
 document.addEventListener(
@@ -3681,4 +2953,4 @@ checkAuth();
 </script>
 
 </body>
-</html>
+   </html>
