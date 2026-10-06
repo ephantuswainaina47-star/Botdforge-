@@ -10,6 +10,7 @@ import {
   createSession
 } from "../../lib/session.js";
 
+
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -18,6 +19,7 @@ function escapeHtml(value) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
 
 function parseCookies(req) {
   const cookieHeader =
@@ -50,6 +52,7 @@ function parseCookies(req) {
   return cookies;
 }
 
+
 function clearCookie(name) {
   return [
     `${name}=`,
@@ -61,13 +64,17 @@ function clearCookie(name) {
   ].join("; ");
 }
 
+
 export default async function handler(req, res) {
+
   try {
+
     const CLIENT_ID =
       "34ANBPdRnPmbX9aUifyUs";
 
     const REDIRECT_URI =
       "https://botdforge.vercel.app/api/auth/deriv/callback";
+
 
     const {
       code,
@@ -76,15 +83,19 @@ export default async function handler(req, res) {
       error_description
     } = req.query;
 
+
     // ---------------------------------------
     // Handle Deriv OAuth error
     // ---------------------------------------
 
     if (error) {
+
       return res.status(400).send(`
         <html>
+
           <head>
             <title>BotForge - Deriv Login Error</title>
+
             <meta
               name="viewport"
               content="width=device-width,initial-scale=1"
@@ -115,7 +126,9 @@ export default async function handler(req, res) {
                 Deriv Login Error
               </h2>
 
-              <p>${escapeHtml(error)}</p>
+              <p>
+                ${escapeHtml(error)}
+              </p>
 
               <p style="color:#aaa;">
                 ${escapeHtml(
@@ -124,10 +137,13 @@ export default async function handler(req, res) {
               </p>
 
             </div>
+
           </body>
+
         </html>
       `);
     }
+
 
     // ---------------------------------------
     // Read OAuth cookies
@@ -142,6 +158,7 @@ export default async function handler(req, res) {
     const codeVerifier =
       cookies.botforge_pkce_verifier;
 
+
     // ---------------------------------------
     // Verify OAuth state
     // ---------------------------------------
@@ -151,8 +168,10 @@ export default async function handler(req, res) {
       !savedState ||
       state !== savedState
     ) {
+
       return res.status(400).send(`
         <html>
+
           <body style="
             margin:0;
             background:#060A1A;
@@ -175,32 +194,39 @@ export default async function handler(req, res) {
             </p>
 
           </body>
+
         </html>
       `);
     }
+
 
     // ---------------------------------------
     // Check authorization code
     // ---------------------------------------
 
     if (!code) {
+
       return res.status(400).send(
         "Missing Deriv authorization code."
       );
     }
+
 
     // ---------------------------------------
     // Check PKCE verifier
     // ---------------------------------------
 
     if (!codeVerifier) {
+
       return res.status(400).send(
         "PKCE verifier missing."
       );
     }
 
+
     // ---------------------------------------
     // Exchange authorization code
+    // for Deriv access token
     // ---------------------------------------
 
     const tokenResponse =
@@ -216,6 +242,7 @@ export default async function handler(req, res) {
 
           body:
             new URLSearchParams({
+
               grant_type:
                 "authorization_code",
 
@@ -229,17 +256,21 @@ export default async function handler(req, res) {
 
               redirect_uri:
                 REDIRECT_URI
+
             })
         }
       );
 
+
     const tokenData =
       await tokenResponse.json();
+
 
     if (
       !tokenResponse.ok ||
       !tokenData.access_token
     ) {
+
       console.error(
         "Deriv token exchange failed:",
         tokenData
@@ -247,6 +278,7 @@ export default async function handler(req, res) {
 
       return res.status(400).send(`
         <html>
+
           <body style="
             margin:0;
             background:#060A1A;
@@ -275,17 +307,21 @@ export default async function handler(req, res) {
             </p>
 
           </body>
+
         </html>
       `);
     }
 
+
     const accessToken =
       tokenData.access_token;
+
 
     const expiresIn =
       Number(
         tokenData.expires_in || 3600
       );
+
 
     // ---------------------------------------
     // Get Deriv account information
@@ -304,10 +340,13 @@ export default async function handler(req, res) {
         }
       );
 
+
     const accountData =
       await accountResponse.json();
 
+
     if (!accountResponse.ok) {
+
       console.error(
         "Deriv account lookup failed:",
         accountData
@@ -315,6 +354,7 @@ export default async function handler(req, res) {
 
       return res.status(400).send(`
         <html>
+
           <body style="
             margin:0;
             background:#060A1A;
@@ -335,9 +375,11 @@ export default async function handler(req, res) {
             </p>
 
           </body>
+
         </html>
       `);
     }
+
 
     // ---------------------------------------
     // Find Deriv account
@@ -350,9 +392,12 @@ export default async function handler(req, res) {
           ? [accountData.data]
           : [];
 
+
     if (!accounts.length) {
+
       return res.status(400).send(`
         <html>
+
           <body style="
             margin:0;
             background:#060A1A;
@@ -372,28 +417,34 @@ export default async function handler(req, res) {
             </p>
 
           </body>
+
         </html>
       `);
     }
 
+
     // ---------------------------------------
-    // Select account
+    // Select Deriv account
     // ---------------------------------------
 
     const derivAccount =
       accounts[0];
+
 
     const derivAccountId =
       derivAccount.account_id ||
       derivAccount.loginid ||
       derivAccount.id;
 
+
     const accountType =
       derivAccount.account_type ||
       derivAccount.type ||
       "unknown";
 
+
     if (!derivAccountId) {
+
       console.error(
         "Deriv account ID missing:",
         derivAccount
@@ -401,6 +452,7 @@ export default async function handler(req, res) {
 
       return res.status(400).send(`
         <html>
+
           <body style="
             margin:0;
             background:#060A1A;
@@ -421,17 +473,28 @@ export default async function handler(req, res) {
             </p>
 
           </body>
+
         </html>
       `);
     }
+
 
     console.log(
       "Deriv account:",
       derivAccountId
     );
 
+
     // ---------------------------------------
-    // Create internal BotForge user
+    // Create internal BotForge identity
+    // ---------------------------------------
+    //
+    // IMPORTANT:
+    // The user is NOT logging in with Supabase.
+    // Deriv OAuth is the actual login.
+    //
+    // This internal Supabase user only gives
+    // BotForge a permanent database user_id.
     // ---------------------------------------
 
     const internalEmail =
@@ -439,7 +502,9 @@ export default async function handler(req, res) {
         derivAccountId
       ).toLowerCase()}@botforge.internal`;
 
+
     let userId = null;
+
 
     const {
       data: existingUsers,
@@ -451,14 +516,17 @@ export default async function handler(req, res) {
           perPage: 1000
         });
 
+
     if (listUsersError) {
+
       console.error(
-        "Supabase user lookup failed:",
+        "Internal user lookup failed:",
         listUsersError
       );
 
       throw listUsersError;
     }
+
 
     const existingUser =
       existingUsers?.users?.find(
@@ -466,35 +534,45 @@ export default async function handler(req, res) {
           user.email === internalEmail
       );
 
+
     if (existingUser) {
+
       userId =
         existingUser.id;
+
     } else {
+
       const {
         data: createdUser,
         error: createUserError
       } =
         await supabaseAdmin.auth.admin
           .createUser({
+
             email:
               internalEmail,
 
             email_confirmed:
               true
+
           });
 
+
       if (createUserError) {
+
         console.error(
-          "Supabase user creation failed:",
+          "Internal user creation failed:",
           createUserError
         );
 
         throw createUserError;
       }
 
+
       userId =
         createdUser.user.id;
     }
+
 
     // ---------------------------------------
     // Update BotForge profile
@@ -506,19 +584,31 @@ export default async function handler(req, res) {
       await supabaseAdmin
         .from("profiles")
         .upsert(
+
           {
-            id: userId,
-            email: internalEmail,
+            id:
+              userId,
+
+            email:
+              internalEmail,
+
             full_name:
               String(derivAccountId),
-            role: "user"
+
+            role:
+              "user"
           },
+
           {
-            onConflict: "id"
+            onConflict:
+              "id"
           }
+
         );
 
+
     if (profileError) {
+
       console.error(
         "Profile upsert failed:",
         profileError
@@ -526,6 +616,7 @@ export default async function handler(req, res) {
 
       throw profileError;
     }
+
 
     // ---------------------------------------
     // Save Deriv connection
@@ -537,19 +628,231 @@ export default async function handler(req, res) {
       await supabaseAdmin
         .from("deriv_connections")
         .upsert(
+
           {
-            user_id: userId,
+            user_id:
+              userId,
+
             deriv_account_id:
               String(derivAccountId),
+
             account_type:
               String(accountType),
-            connected: true,
+
+            connected:
+              true,
+
             updated_at:
               new Date().toISOString()
           },
+
           {
-            onConflict: "user_id"
+            onConflict:
+              "user_id"
           }
+
         );
 
-    if (connectionError)
+
+    if (connectionError) {
+
+      console.error(
+        "Deriv connection save failed:",
+        connectionError
+      );
+
+      throw connectionError;
+    }
+
+
+    // ---------------------------------------
+    // Encrypt and save Deriv token
+    // ---------------------------------------
+
+    const encryptedToken =
+      encrypt(accessToken);
+
+
+    const tokenExpiresAt =
+      new Date(
+        Date.now() +
+        expiresIn * 1000
+      ).toISOString();
+
+
+    const {
+      error: tokenSaveError
+    } =
+      await supabaseAdmin
+        .from("deriv_tokens")
+        .upsert(
+
+          {
+            user_id:
+              userId,
+
+            access_token_encrypted:
+              encryptedToken,
+
+            expires_at:
+              tokenExpiresAt,
+
+            updated_at:
+              new Date().toISOString()
+          },
+
+          {
+            onConflict:
+              "user_id"
+          }
+
+        );
+
+
+    if (tokenSaveError) {
+
+      console.error(
+        "Deriv token save failed:",
+        tokenSaveError
+      );
+
+      throw tokenSaveError;
+    }
+
+
+    // ---------------------------------------
+    // Create BotForge session
+    // ---------------------------------------
+
+    await createSession(
+      userId,
+      res
+    );
+
+
+    // ---------------------------------------
+    // Preserve session cookie
+    // and clear OAuth cookies
+    // ---------------------------------------
+
+    const existingSetCookie =
+      res.getHeader("Set-Cookie");
+
+
+    const sessionCookies =
+      Array.isArray(existingSetCookie)
+        ? existingSetCookie
+        : existingSetCookie
+          ? [existingSetCookie]
+          : [];
+
+
+    res.setHeader(
+      "Set-Cookie",
+      [
+
+        ...sessionCookies,
+
+        clearCookie(
+          "botforge_oauth_state"
+        ),
+
+        clearCookie(
+          "botforge_pkce_verifier"
+        )
+
+      ]
+    );
+
+
+    // ---------------------------------------
+    // Redirect to BotForge
+    // ---------------------------------------
+
+    return res.redirect(
+      302,
+      "https://botdforge.vercel.app/"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "BotForge Deriv callback error:",
+      error
+    );
+
+
+    return res.status(500).send(`
+      <html>
+
+        <head>
+
+          <title>
+            BotForge Error
+          </title>
+
+          <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1"
+          >
+
+        </head>
+
+
+        <body style="
+          margin:0;
+          background:#060A1A;
+          color:white;
+          font-family:Arial,sans-serif;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          min-height:100vh;
+          text-align:center;
+        ">
+
+
+          <div style="
+            width:90%;
+            max-width:500px;
+            padding:30px;
+            background:#10152b;
+            border-radius:18px;
+          ">
+
+
+            <h2 style="
+              color:#ff5c7a;
+            ">
+              BotForge Server Error
+            </h2>
+
+
+            <p style="
+              color:#aaa;
+            ">
+              Something went wrong while
+              connecting your Deriv account.
+            </p>
+
+
+            <p style="
+              color:#666;
+              font-size:12px;
+            ">
+              Check the Vercel function logs
+              for the technical error.
+            </p>
+
+
+          </div>
+
+
+        </body>
+
+      </html>
+    `);
+  }
+
+            }
