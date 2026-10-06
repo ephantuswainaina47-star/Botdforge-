@@ -1,4 +1,4 @@
-export default function handler(req, res) {
+export default async function handler(req, res) {
   try {
     const CLIENT_ID = "34ANBPdRnPmbX9aUifyUs";
 
@@ -6,7 +6,7 @@ export default function handler(req, res) {
       "https://botdforge.vercel.app/api/auth/deriv/callback";
 
     // ---------------------------------------
-    // Generate random state
+    // Generate OAuth state
     // ---------------------------------------
 
     const stateBytes = new Uint8Array(32);
@@ -18,7 +18,7 @@ export default function handler(req, res) {
       .join("");
 
     // ---------------------------------------
-    // Generate PKCE verifier
+    // Generate PKCE code verifier
     // ---------------------------------------
 
     const verifierBytes = new Uint8Array(64);
@@ -31,79 +31,118 @@ export default function handler(req, res) {
     let codeVerifier = "";
 
     for (const byte of verifierBytes) {
-      codeVerifier +=
-        allowedChars[byte % allowedChars.length];
+      codeVerifier += allowedChars[
+        byte % allowedChars.length
+      ];
     }
 
     // ---------------------------------------
-    // Generate PKCE challenge
+    // Generate PKCE code challenge
+    // SHA256(code_verifier)
     // ---------------------------------------
 
-    return crypto.subtle
-      .digest(
-        "SHA-256",
-        new TextEncoder().encode(codeVerifier)
-      )
-      .then(hash => {
+    const hash = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(codeVerifier)
+    );
 
-        const codeChallenge = Buffer.from(hash)
-          .toString("base64")
-          .replace(/\+/g, "-")
-          .replace(/\//g, "_")
-          .replace(/=+$/, "");
+    const codeChallenge = Buffer.from(hash)
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
 
-        // ---------------------------------------
-        // Save state and verifier in cookies
-        // ---------------------------------------
+    // ---------------------------------------
+    // Store state securely
+    // ---------------------------------------
 
-        const stateCookie = [
-          `botforge_oauth_state=${encodeURIComponent(state)}`,
-          "Path=/",
-          "HttpOnly",
-          "Secure",
-          "SameSite=Lax",
-          "Max-Age=600"
-        ].join("; ");
+    const stateCookie = [
+      `botforge_oauth_state=${encodeURIComponent(state)}`,
+      "Path=/",
+      "HttpOnly",
+      "Secure",
+      "SameSite=Lax",
+      "Max-Age=600"
+    ].join("; ");
 
-        const verifierCookie = [
-          `botforge_pkce_verifier=${encodeURIComponent(codeVerifier)}`,
-          "Path=/",
-          "HttpOnly",
-          "Secure",
-          "SameSite=Lax",
-          "Max-Age=600"
-        ].join("; ");
+    // ---------------------------------------
+    // Store PKCE verifier securely
+    // ---------------------------------------
 
-        // ---------------------------------------
-        // Build Deriv authorization URL
-        // ---------------------------------------
+    const verifierCookie = [
+      `botforge_pkce_verifier=${encodeURIComponent(codeVerifier)}`,
+      "Path=/",
+      "HttpOnly",
+      "Secure",
+      "SameSite=Lax",
+      "Max-Age=600"
+    ].join("; ");
 
-        const authUrl =
-          "https://auth.deriv.com/oauth2/auth" +
-          "?response_type=code" +
-          "&client_id=" +
-          encodeURIComponent(CLIENT_ID) +
-          "&redirect_uri=" +
-          encodeURIComponent(REDIRECT_URI) +
-          "&scope=trade" +
-          "&state=" +
-          encodeURIComponent(state) +
-          "&code_challenge=" +
-          encodeURIComponent(codeChallenge) +
-          "&code_challenge_method=S256";
+    // ---------------------------------------
+    // Build Deriv OAuth URL
+    // ---------------------------------------
 
-        res.setHeader("Set-Cookie", [
-          stateCookie,
-          verifierCookie
-        ]);
+    const authUrl = new URL(
+      "https://auth.deriv.com/oauth2/auth"
+    );
 
-        return res.redirect(302, authUrl);
-      });
+    authUrl.searchParams.set(
+      "response_type",
+      "code"
+    );
+
+    authUrl.searchParams.set(
+      "client_id",
+      CLIENT_ID
+    );
+
+    authUrl.searchParams.set(
+      "redirect_uri",
+      REDIRECT_URI
+    );
+
+    authUrl.searchParams.set(
+      "scope",
+      "trade"
+    );
+
+    authUrl.searchParams.set(
+      "state",
+      state
+    );
+
+    authUrl.searchParams.set(
+      "code_challenge",
+      codeChallenge
+    );
+
+    authUrl.searchParams.set(
+      "code_challenge_method",
+      "S256"
+    );
+
+    // ---------------------------------------
+    // Set secure cookies
+    // ---------------------------------------
+
+    res.setHeader("Set-Cookie", [
+      stateCookie,
+      verifierCookie
+    ]);
+
+    // ---------------------------------------
+    // Redirect to Deriv
+    // ---------------------------------------
+
+    return res.redirect(
+      302,
+      authUrl.toString()
+    );
 
   } catch (error) {
 
     console.error(
-      "Deriv OAuth start error:",
+      "BotForge Deriv OAuth start error:",
       error
     );
 
@@ -111,4 +150,4 @@ export default function handler(req, res) {
       "Unable to start Deriv authorization."
     );
   }
-        }
+               }
