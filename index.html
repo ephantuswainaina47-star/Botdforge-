@@ -2464,6 +2464,13 @@ let currentUser=null;
 let currentSession=null;
 let authMode='login';
 
+/*
+ * Prevent repeated calls to /api/auth/login when
+ * Supabase fires more than one auth event for the
+ * same session.
+ */
+let backendSessionSyncedToken=null;
+
 
 /* =========================================================
    STORAGE / APP STATE
@@ -2498,6 +2505,157 @@ const editorTabs=[
 'Referral',
 'Social Links'
 ];
+
+
+/* =========================================================
+   BACKEND SESSION SYNC
+   ========================================================= */
+
+/*
+ * This connects the Supabase authentication session
+ * to the secure BotForge backend session.
+ *
+ * The Supabase access token is sent to the backend only
+ * over HTTPS. The backend then creates the HttpOnly
+ * botforge_session cookie.
+ *
+ * The access token is NOT saved to localStorage by this
+ * function.
+ */
+
+async function syncBackendSession(session){
+
+if(!session || !session.access_token){
+
+throw new Error(
+'No authentication session was returned.'
+);
+
+}
+
+if(
+backendSessionSyncedToken ===
+session.access_token
+){
+
+return true;
+
+}
+
+const response=
+await fetch(
+'/api/auth/login',
+{
+method:'POST',
+credentials:'include',
+headers:{
+'Content-Type':'application/json'
+},
+body:JSON.stringify({
+
+access_token:
+session.access_token
+
+})
+}
+);
+
+const data=
+await response
+.json()
+.catch(()=>({}));
+
+if(!response.ok){
+
+console.error(
+'BotForge backend authentication error:',
+data
+);
+
+throw new Error(
+data.error||
+'Unable to create BotForge backend session.'
+);
+
+}
+
+backendSessionSyncedToken=
+session.access_token;
+
+console.log(
+'BotForge backend session synchronized.'
+);
+
+return true;
+
+}
+
+
+/*
+ * Checks whether a BotForge backend session already exists.
+ *
+ * If it exists, we do not create another one.
+ *
+ * If it does not exist, the Supabase session is sent to
+ * /api/auth/login to create the secure backend session.
+ */
+
+async function ensureBackendSession(session){
+
+if(!session || !session.access_token){
+
+throw new Error(
+'No active authentication session.'
+);
+
+}
+
+try{
+
+const response=
+await fetch(
+'/api/auth/session',
+{
+method:'GET',
+credentials:'include',
+headers:{
+'Accept':'application/json'
+}
+}
+);
+
+if(response.ok){
+
+const data=
+await response
+.json()
+.catch(()=>({}));
+
+if(data.authenticated){
+
+backendSessionSyncedToken=
+session.access_token;
+
+return true;
+
+}
+
+}
+
+}catch(error){
+
+console.warn(
+'Existing backend session check failed. Attempting synchronization.',
+error
+);
+
+}
+
+return await syncBackendSession(
+session
+);
+
+}
 
 
 /* =========================================================
@@ -2636,9 +2794,20 @@ box.classList.add('show');
 
 async function signInWithGoogle(){
 
+const button=
+document.getElementById(
+'googleAuthButton'
+);
+
 try{
 
 showAuthMessage('');
+
+if(button){
+
+button.disabled=true;
+
+}
 
 const {
 data,
@@ -2660,7 +2829,19 @@ showAuthMessage(
 getFriendlyAuthError(error)
 );
 
+if(button){
+button.disabled=false;
 }
+
+return;
+
+}
+
+/*
+ * Google OAuth normally redirects the browser.
+ * The session is synchronized by checkAuth() and
+ * the SIGNED_IN listener after the redirect.
+ */
 
 }catch(error){
 
@@ -2672,6 +2853,10 @@ error
 showAuthMessage(
 'Unable to continue with Google.'
 );
+
+if(button){
+button.disabled=false;
+}
 
 }
 
@@ -2727,6 +2912,10 @@ authMode==='login'
 
 try{
 
+/* =====================================================
+   LOGIN
+   ===================================================== */
+
 if(authMode==='login'){
 
 const {
@@ -2753,16 +2942,35 @@ return;
 
 }
 
-if(data.session){
+if(!data.session){
+
+throw new Error(
+'Login succeeded but no authentication session was returned.'
+);
+
+}
+
+/*
+ * NEW:
+ * Create/synchronize the secure BotForge backend session.
+ */
+await syncBackendSession(
+data.session
+);
 
 await handleSignedInUser(
 data.user,
 data.session
 );
 
+return;
+
 }
 
-}else{
+
+/* =====================================================
+   SIGNUP
+   ===================================================== */
 
 const name=
 document.getElementById('authName')
@@ -2884,7 +3092,20 @@ return;
 
 }
 
+
+/*
+ * If email confirmation is disabled in Supabase,
+ * Supabase returns a session immediately.
+ *
+ * In that case we also create the BotForge backend
+ * session immediately.
+ */
+
 if(data.session){
+
+await syncBackendSession(
+data.session
+);
 
 await handleSignedInUser(
 data.user,
@@ -2892,6 +3113,14 @@ data.session
 );
 
 }else{
+
+/*
+ * If email confirmation is enabled,
+ * there is no valid access token yet.
+ *
+ * Backend session will be created after the user
+ * confirms the email and logs in.
+ */
 
 showAuthMessage(
 'Account created successfully. Please check your email and confirm your account before logging in.'
@@ -2902,11 +3131,12 @@ button.textContent='Create BotForge Account';
 
 }
 
-}
-
 }catch(error){
 
-console.error(error);
+console.error(
+'BotForge authentication error:',
+error
+);
 
 showAuthMessage(
 error.message||
@@ -3007,6 +3237,41 @@ if(data.session){
 currentSession=data.session;
 currentUser=data.session.user;
 
+/*
+ * NEW:
+ * Make sure the secure backend session exists too.
+ *
+ * This is important after:
+ * - normal login
+ * - Google login
+ * - browser refresh
+ * - returning from OAuth
+ */
+
+try{
+
+await ensureBackendSession(
+data.session
+);
+
+}catch(backendError){
+
+console.error(
+'Backend session synchronization failed:',
+backendError
+);
+
+showAuthMessage(
+backendError.message||
+'Unable to connect your account to the BotForge backend.'
+);
+
+showAuth();
+
+return;
+
+}
+
 await handleSignedInUser(
 currentUser,
 currentSession
@@ -3020,7 +3285,11 @@ showAuth();
 
 }catch(error){
 
-console.error(error);
+console.error(
+'Authentication check failed:',
+error
+);
+
 showAuth();
 
 }
@@ -3189,6 +3458,11 @@ return;
 currentUser=null;
 currentSession=null;
 
+/*
+ * Force the next login to synchronize again.
+ */
+backendSessionSyncedToken=null;
+
 closeSide();
 
 document.getElementById(
@@ -3243,9 +3517,46 @@ if(event==='SIGNED_IN' && session){
 currentSession=session;
 currentUser=session.user;
 
-handleSignedInUser(
+/*
+ * Do not perform heavy asynchronous work directly
+ * inside the Supabase auth callback.
+ *
+ * A short timeout allows Supabase to finish its own
+ * internal auth processing first.
+ */
+
+setTimeout(
+async()=>{
+
+try{
+
+await ensureBackendSession(
+session
+);
+
+await handleSignedInUser(
 session.user,
 session
+);
+
+}catch(error){
+
+console.error(
+'Backend session sync from auth event failed:',
+error
+);
+
+showAuthMessage(
+error.message||
+'Unable to connect your account to BotForge.'
+);
+
+showAuth();
+
+}
+
+},
+0
 );
 
 }
@@ -3254,6 +3565,7 @@ if(event==='SIGNED_OUT'){
 
 currentSession=null;
 currentUser=null;
+backendSessionSyncedToken=null;
 
 showAuth();
 
@@ -3263,6 +3575,12 @@ if(event==='TOKEN_REFRESHED' && session){
 
 currentSession=session;
 currentUser=session.user;
+
+/*
+ * The existing HttpOnly backend session normally remains
+ * valid independently. We do not create a new backend
+ * session for every token refresh.
+ */
 
 }
 
@@ -3284,6 +3602,11 @@ return;
 }
 
 try{
+
+/*
+ * The frontend does NOT decide whether the user is
+ * permanently linked. The backend is the authority.
+ */
 
 const response=
 await fetch(
@@ -4883,4 +5206,4 @@ checkAuth();
 </script>
 
 </body>
-  </html>
+   </html>
